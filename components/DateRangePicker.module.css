@@ -1,0 +1,66 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: var(--paper);
+  border: 1.5px solid var(--cream-deep);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  text-align: left;
+  transition: border-color 0.2s;
+}
+
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  border-color: var(--clay);
+}
+
+.cell {
+  flex: 1;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.cellLabel {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.cellValue {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--bark-deep);
+  font-variation-settings: 'opsz' 24, 'SOFT' 50;
+}
+
+.divider {
+  width: 1px;
+  background: var(--cream-deep);
+}
+
+.popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  background: var(--paper);
+  border-radius: var(--r-md);
+  border: 1px solid var(--cream-deep);
+  box-shadow: 0 20px 50px rgba(31, 26, 20, 0.18);
+  padding: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .popover {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

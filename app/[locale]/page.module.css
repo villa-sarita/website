@@ -1,0 +1,224 @@
+/* ---- Value props ---- */
+.values {
+  background: var(--paper);
+  padding-block: clamp(5rem, 12vw, 8rem);
+}
+
+.valueGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-xl);
+  margin-top: var(--gap-xl);
+}
+
+@media (min-width: 760px) {
+  .valueGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap-xxl);
+  }
+}
+
+.valueCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-left: 2px solid var(--clay);
+  background: linear-gradient(180deg, rgba(244, 236, 219, 0.5), transparent);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  height: 100%;
+}
+
+.valueNum {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--leaf-dark);
+  letter-spacing: 0.18em;
+}
+
+.valueCard h3 {
+  font-size: var(--step-2);
+  line-height: 1.1;
+}
+
+.valueCard p {
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.55;
+}
+
+/* ---- Cabañas section ---- */
+.cabanasSection {
+  padding-block: clamp(5rem, 12vw, 9rem);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+}
+
+.sectionHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  max-width: 760px;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+}
+
+.sectionLede {
+  font-size: var(--step-1);
+  color: var(--ink-soft);
+  line-height: 1.5;
+  font-family: var(--font-body);
+  max-width: 56ch;
+}
+
+.cabanasGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-xl);
+}
+
+@media (min-width: 700px) {
+  .cabanasGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1080px) {
+  .cabanasGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ---- Experience teaser ---- */
+.experience {
+  background: var(--jungle-dark);
+  color: var(--cream);
+  position: relative;
+  overflow: hidden;
+}
+
+.experience h2,
+.experience h3,
+.experience h4 {
+  color: var(--cream);
+}
+
+.experienceInner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-xxl);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .experienceInner {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+.experienceText p {
+  color: rgba(244, 236, 219, 0.78);
+  margin-block: var(--gap-md) var(--gap-lg);
+}
+
+.lede {
+  font-size: var(--step-1);
+  line-height: 1.5;
+  max-width: 40ch;
+}
+
+.experienceArt {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expCircle1,
+.expCircle2,
+.expCircle3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.85;
+}
+
+.expCircle1 {
+  width: 70%;
+  height: 70%;
+  background: radial-gradient(circle at 35% 30%, var(--leaf-soft), transparent 65%);
+  top: 5%;
+  left: 5%;
+}
+
+.expCircle2 {
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(circle at 60% 60%, var(--clay), transparent 65%);
+  bottom: 8%;
+  right: 8%;
+}
+
+.expCircle3 {
+  width: 35%;
+  height: 35%;
+  background: radial-gradient(circle at 50% 50%, var(--sky), transparent 65%);
+  top: 35%;
+  right: 25%;
+}
+
+.expCaveat {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-hand);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: var(--cream);
+  text-align: center;
+  line-height: 1.2;
+  transform: rotate(-3deg);
+}
+
+/* ---- Events teaser ---- */
+.events {
+  background: var(--cream);
+  position: relative;
+}
+
+.eventsInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  max-width: 720px;
+}
+
+.eventsInner h2 {
+  margin-top: 0.5rem;
+}
+
+.eventsInner p {
+  margin-block: 0.5rem 1.25rem;
+  color: var(--ink-soft);
+}
+
+/* ---- Location teaser ---- */
+.location {
+  background: linear-gradient(180deg, var(--cream) 0%, #e3d9be 100%);
+  text-align: left;
+}
+
+.locationInner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  max-width: 720px;
+}
+
+.locationInner h2 {
+  margin-top: 0.5rem;
+}
+
+.locationInner p {
+  margin-block: 0.5rem 1.25rem;
+  color: var(--ink-soft);
+}

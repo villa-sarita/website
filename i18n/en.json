@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "siteName": "Villa Sarita",
+    "siteTitle": "Villa Sarita · Premium ecolodge in Tumaco, Colombia",
+    "siteDescription": "Five cabins in a natural retreat on Colombia's Pacific coast. Cross the door to your connection. Book direct, no middlemen.",
+    "ogImageAlt": "Villa Sarita · Premium ecolodge in Tumaco on the Colombian Pacific",
+    "home": {
+      "title": "Villa Sarita · Premium cabins in Tumaco, Colombian Pacific",
+      "description": "Book direct at Villa Sarita: five private cabins in a natural retreat on Colombia's Pacific coast. From an intimate retreat for two to a studio for six. No middlemen."
+    },
+    "cabanas": {
+      "title": "The five cabins · Villa Sarita in Tumaco",
+      "description": "Five private cabins at Villa Sarita, Tumaco: one for couples, two for families, and two larger options for up to six guests. Capacity, amenities, and direct booking."
+    },
+    "cabanaDetailDescription": "{tagline}. A cabin at Villa Sarita, a premium ecolodge in Tumaco on the Colombian Pacific. Book direct, no middlemen.",
+    "experiencia": {
+      "title": "Experiences · Birthdays, weddings & picnics at Villa Sarita",
+      "description": "Every celebration is prepared with care in a private natural setting. Birthdays, weddings, quinceañeras, picnics, and couple's nights at Villa Sarita, Tumaco."
+    },
+    "experienciaDetailDescription": "{tagline}. An experience prepared at Villa Sarita, a premium ecolodge in Tumaco on the Colombian Pacific.",
+    "ubicacion": {
+      "title": "How to get to Villa Sarita · Tumaco, Nariño",
+      "description": "Villa Sarita sits in Barrio Cordialidad, Tumaco (Nariño). 45 minutes by flight from Cali, or 6 hours by road from Pasto. Map, address, and directions."
+    },
+    "reservar": {
+      "title": "Book · Villa Sarita Tumaco",
+      "description": "Book your cabin at Villa Sarita with a 20% deposit. Instant confirmation, balance paid on arrival."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "cabanas": "Cabins",
+    "experiencia": "Experiences",
+    "ubicacion": "Location",
+    "reservar": "Book",
+    "switchLang": "ES"
+  },
+  "home": {
+    "heroSuperline": "premium ecolodge · tumaco",
+    "heroTitle": "Villa Sarita",
+    "heroKicker": "Cross the door to your connection",
+    "heroSubtitle": "A retreat on the Colombian Pacific",
+    "heroBlurb": "Villa Sarita offers a premium experience of rest and connection with nature, where every guest steps into immediate calm upon entering — enjoying private cabins, attentive hosting, and natural settings designed for wellbeing and intimate celebrations.",
+    "ctaReserve": "Book your stay",
+    "ctaExplore": "Browse the cabins",
+    "valueLabel": "why Villa Sarita",
+    "value1Title": "Rest begins at the door",
+    "value1Body": "From the moment you arrive, you leave behind the noise, the rush, and the routine to enter a space where calm, silence, and nature take center stage.",
+    "value2Title": "Privacy and exclusivity at the heart of nature",
+    "value2Body": "Enjoy private cabins, intimate spaces, and a protected natural setting designed for those seeking real rest. Far from mass tourism, Villa Sarita offers an experience where true luxury lives in calm, comfort, and the freedom to live every moment your way.",
+    "value3Title": "Experiences that become memories",
+    "value3Body": "More than a stay, Villa Sarita is a place to share and celebrate. Bonfires under the stars, outdoor picnics, special dinners, and personal attention create authentic moments that strengthen bonds and turn into unforgettable memories.",
+    "cabanasLabel": "the five cabins",
+    "cabanasTitle": "A cabin for every kind of trip",
+    "cabanasBlurb": "From an intimate retreat for two to a self-contained studio for six. Each one with its own feel, all in the same natural setting.",
+    "experienceLabel": "experiences at Villa Sarita",
+    "experienceTitle": "Birthdays, weddings, picnics and more",
+    "experienceBlurb": "Every celebration is prepared with care, in a private natural setting. Birthdays, weddings, picnics, quinceañeras and more. Browse the experiences we've created and pick yours.",
+    "experienceCta": "See the experiences",
+    "locationLabel": "where we are",
+    "locationTitle": "Tumaco, Colombian Pacific",
+    "locationBlurb": "Barrio Cordialidad, in Tumaco (Nariño). A natural retreat on the Colombian Pacific — away from the noise, close to the sea.",
+    "locationCta": "How to get there"
+  },
+  "cabanas": {
+    "indexLabel": "the five cabins",
+    "indexTitle": "Pick your cabin",
+    "indexBlurb": "Five cabins for different kinds of trips: one for couples, two for families, and two larger options for up to six guests.",
+    "capacityNoun": "guests",
+    "capacityCouple": "for two",
+    "capacityFamily": "up to four",
+    "capacityGroup": "up to six",
+    "fromPerNight": "from",
+    "perNight": "per night",
+    "viewCabin": "View cabin",
+    "amenitiesLabel": "what's included",
+    "bookButton": "Book this cabin",
+    "messageHost": "Message the host"
+  },
+  "amenities": {
+    "ac": "Air conditioning",
+    "fridge": "Fridge",
+    "kitchen": "Full kitchen",
+    "privateBath": "Private bathroom",
+    "bunkBed": "Bunk bed",
+    "wifi": "WiFi",
+    "parking": "Parking",
+    "pool": "Pool",
+    "outdoorShower": "Outdoor shower",
+    "porch": "Porch",
+    "beachWalk": "Close to the sea",
+    "fan": "Ceiling fan",
+    "hammock": "Hammock",
+    "animals": "Surrounded by nature"
+  },
+  "booking": {
+    "stepDates": "Dates & guests",
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Guests",
+    "addGuest": "Add guest",
+    "removeGuest": "Remove guest",
+    "maxGuestsReached": "Max capacity",
+    "nights": "nights",
+    "stepEvent": "Want to add an event?",
+    "eventToggleHelp": "Birthdays, anniversaries, bachelorettes, special dinners… message us on WhatsApp and we'll sort it.",
+    "eventOn": "Yes, I want to celebrate something",
+    "eventOff": "No, just the stay",
+    "eventWhatsappHelp": "Tell us on WhatsApp what you'd like to celebrate. We confirm availability and lock in the details directly with the host.",
+    "eventWhatsappCta": "Message us on WhatsApp",
+    "eventWhatsappMessage": "Hi! I'm interested in booking a cabin at Villa Sarita and I'd like to celebrate an event during my stay. Could you help me with availability and the details?",
+    "stepSummary": "Summary",
+    "subtotal": "Subtotal",
+    "eventExtra": "Event cost (estimate)",
+    "eventQuoted": "We'll confirm by WhatsApp",
+    "total": "Stay total",
+    "deposit": "Deposit (20%)",
+    "balance": "Balance due on arrival",
+    "balanceHelp": "20% is paid now to secure the booking. The remaining 80% is paid on arrival — cash, Nequi, or bank transfer.",
+    "stepGuest": "Your details",
+    "fullName": "Full name",
+    "email": "Email",
+    "emailHelp": "you@example.com",
+    "optional": "optional",
+    "phone": "Phone",
+    "country": "Country",
+    "payDeposit": "Pay deposit & book",
+    "or": "or",
+    "bookByWhatsapp": "Book by WhatsApp",
+    "whatsappHint": "No email needed. Your host will confirm the details and payment by WhatsApp.",
+    "processing": "Processing…",
+    "ctaHint": "Fill in dates, name and phone to continue.",
+    "errorGeneric": "We couldn't process the booking. Try again or message us on WhatsApp."
+  },
+  "confirmation": {
+    "label": "booking confirmed",
+    "title": "Done! Your cabin is booked",
+    "subtitle": "We received your deposit. We'll message you on WhatsApp to confirm the details.",
+    "summaryLabel": "Your booking",
+    "balanceLabel": "Outstanding balance",
+    "balanceHelp": "Paid on arrival at Villa Sarita — cash, Nequi, or bank transfer.",
+    "whatsappCta": "Message the host on WhatsApp"
+  },
+  "experience": {
+    "label": "experiences",
+    "title": "Experiences at Villa Sarita",
+    "blurb": "Each experience is prepared with care, in a private natural setting. Birthdays, weddings, picnics, quinceañeras and more. Pick the one that calls to you.",
+    "cardLabel": "experience",
+    "cardCta": "View experience",
+    "detailLabel": "experience",
+    "detailCtaBook": "Book for this experience",
+    "backToAll": "Back to all experiences"
+  },
+  "location": {
+    "label": "how to get there",
+    "title": "Tumaco, Nariño",
+    "blurb": "Villa Sarita sits in Barrio Cordialidad, Tumaco (Nariño), on the Colombian Pacific. Tumaco airport connects to Cali (45-min flight). By road, it's about 6 hours from Pasto.",
+    "addressLabel": "Address",
+    "addressHelp": "Carrera 18, Barrio Cordialidad — Tumaco, Nariño. Find us on Google Maps as \"Cabañas Villa Sarita\". We share the exact location by WhatsApp once the booking is confirmed.",
+    "howLabel": "how to get there"
+  },
+  "footer": {
+    "slogan": "Cross the door to your connection",
+    "tagline": "Premium ecolodge on the Colombian Pacific",
+    "links": "Links",
+    "contact": "Contact",
+    "social": "Follow us",
+    "rights": "All rights reserved.",
+    "whatsappLabel": "Message us",
+    "checkInOut": "Check-in 2:00 PM · Check-out 1:00 PM"
+  },
+  "whatsapp": {
+    "floatingLabel": "Message the host",
+    "defaultMessage": "Hi, I saw your Villa Sarita site and I'd like to make a booking."
+  }
+}

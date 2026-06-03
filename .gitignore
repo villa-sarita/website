@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# persisted booking data — contains guest PII, never commit
+/data/
 
 # vercel
 .vercel
@@ -39,3 +43,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Heavy reference materials — business assets, not source code.
+# Keep these locally and/or in Google Drive, but don't bloat the repo.
+/Fotografías/
+/Manual de Marca*.pdf
+/Catálogo Hospedaje*.pdf
+*.pdf

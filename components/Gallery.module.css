@@ -1,0 +1,98 @@
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 220px;
+}
+
+.tile {
+  position: relative;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--leaf-soft), var(--leaf));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  isolation: isolate;
+  border: 0;
+  padding: 0;
+  cursor: zoom-in;
+  transition: transform 0.25s var(--ease-soft), box-shadow 0.25s;
+}
+
+.tile:hover {
+  transform: scale(1.01);
+  box-shadow: 0 10px 26px rgba(31, 36, 24, 0.18);
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--leaf);
+  outline-offset: 3px;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s var(--ease-soft);
+}
+
+.tile:hover img {
+  transform: scale(1.04);
+}
+
+/* Desktop layouts — adapt to actual photo count */
+@media (min-width: 720px) {
+  /* 1 photo: single wide tile */
+  .grid[data-count='1'] {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 460px;
+  }
+
+  /* 2 photos: side-by-side */
+  .grid[data-count='2'] {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 360px;
+  }
+
+  /* 3 photos: 1 big + 2 stacked */
+  .grid[data-count='3'] {
+    grid-template-columns: 2fr 1fr;
+    grid-auto-rows: 200px;
+    grid-template-areas:
+      'a b'
+      'a c';
+  }
+  .grid[data-count='3'] .tile1 { grid-area: a; }
+  .grid[data-count='3'] .tile2 { grid-area: b; }
+  .grid[data-count='3'] .tile3 { grid-area: c; }
+
+  /* 4 photos: 1 big + 3 stacked on the right */
+  .grid[data-count='4'] {
+    grid-template-columns: 2fr 1fr;
+    grid-auto-rows: 150px;
+    grid-template-areas:
+      'a b'
+      'a c'
+      'a d';
+  }
+  .grid[data-count='4'] .tile1 { grid-area: a; }
+  .grid[data-count='4'] .tile2 { grid-area: b; }
+  .grid[data-count='4'] .tile3 { grid-area: c; }
+  .grid[data-count='4'] .tile4 { grid-area: d; }
+
+  /* 5 photos: classic mosaic — 1 big + 2x2 small */
+  .grid[data-count='5'] {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-auto-rows: 200px;
+    grid-template-areas:
+      'a b c'
+      'a d e';
+  }
+  .grid[data-count='5'] .tile1 { grid-area: a; }
+  .grid[data-count='5'] .tile2 { grid-area: b; }
+  .grid[data-count='5'] .tile3 { grid-area: c; }
+  .grid[data-count='5'] .tile4 { grid-area: d; }
+  .grid[data-count='5'] .tile5 { grid-area: e; }
+}

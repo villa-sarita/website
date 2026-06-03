@@ -1,0 +1,98 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(20, 25, 18, 0.94);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  animation: fadeIn 0.18s ease-out;
+  cursor: zoom-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.image {
+  max-width: 92vw;
+  max-height: 90vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  cursor: default;
+  animation: imageIn 0.22s var(--ease-soft);
+}
+
+@keyframes imageIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.close,
+.nav {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(246, 239, 225, 0.12);
+  color: var(--cream);
+  border: 1px solid rgba(246, 239, 225, 0.25);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s, color 0.18s;
+}
+
+.close:hover,
+.nav:hover {
+  background: var(--cream);
+  color: var(--bark-deep);
+  transform: scale(1.06);
+}
+
+.close {
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  width: 44px;
+  height: 44px;
+}
+
+.nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+}
+
+.nav:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.prev { left: clamp(0.75rem, 2vw, 1.5rem); }
+.next { right: clamp(0.75rem, 2vw, 1.5rem); }
+
+@media (max-width: 600px) {
+  .nav { width: 42px; height: 42px; }
+}
+
+.counter {
+  position: absolute;
+  bottom: clamp(0.75rem, 2vw, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--cream);
+  background: rgba(20, 25, 18, 0.6);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(246, 239, 225, 0.15);
+}

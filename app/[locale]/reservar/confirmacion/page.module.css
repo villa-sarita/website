@@ -1,0 +1,5 @@
+.page {
+  padding-block: clamp(7rem, 14vw, 10rem) clamp(4rem, 8vw, 6rem);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+  min-height: 80vh;
+}

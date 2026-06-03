@@ -1,0 +1,13 @@
+.page {
+  padding-block: clamp(7rem, 14vw, 10rem) clamp(4rem, 8vw, 6rem);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+}
+
+.title {
+  margin-top: 0.5rem;
+  max-width: 18ch;
+}
+
+.formWrap {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}

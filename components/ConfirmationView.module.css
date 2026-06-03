@@ -1,0 +1,137 @@
+.card {
+  background: var(--cream);
+  border-radius: var(--r-lg);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  box-shadow: 0 30px 70px rgba(31, 26, 20, 0.12);
+  border: 1px solid rgba(58, 38, 22, 0.08);
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.checkmark {
+  color: var(--jungle);
+  width: 60px;
+  height: 60px;
+  display: inline-flex;
+}
+
+.kicker {
+  font-family: var(--font-hand);
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: var(--clay);
+  display: inline-block;
+  transform: rotate(-2deg);
+  width: max-content;
+}
+
+.title {
+  font-size: var(--step-4);
+  line-height: 1.05;
+  max-width: 18ch;
+}
+
+.subtitle {
+  font-size: var(--step-1);
+  color: var(--ink-soft);
+  line-height: 1.45;
+  max-width: 40ch;
+}
+
+.summary {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: var(--paper);
+  border-radius: var(--r-md);
+  border: 1px solid rgba(58, 38, 22, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.summaryHead {
+  font-size: var(--step-1);
+  color: var(--bark-deep);
+  margin-bottom: 0.25rem;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+}
+
+.row strong {
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 24, 'SOFT' 50;
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--bark-deep);
+}
+
+.divider {
+  height: 1px;
+  background: rgba(58, 38, 22, 0.08);
+  margin-block: 0.2rem;
+}
+
+.deposit {
+  color: var(--jungle);
+}
+
+.deposit strong {
+  color: var(--jungle);
+}
+
+.balanceBlock {
+  margin-top: 0.5rem;
+  padding-top: 0.85rem;
+  border-top: 1.5px dashed rgba(58, 38, 22, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.balanceLabel {
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--clay);
+}
+
+.balanceAmount {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--bark-deep);
+  font-variation-settings: 'opsz' 36, 'SOFT' 50;
+  font-weight: 500;
+}
+
+.balanceHelp {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.whatsappCta {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+.reference {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.reference code {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  background: rgba(58, 38, 22, 0.08);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}

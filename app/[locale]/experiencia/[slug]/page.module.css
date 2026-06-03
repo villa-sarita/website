@@ -1,0 +1,56 @@
+.head {
+  padding-block: clamp(7rem, 14vw, 10rem) clamp(2rem, 5vw, 3.5rem);
+  background: linear-gradient(180deg, var(--paper) 0%, var(--cream) 100%);
+}
+
+.back {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--leaf-dark);
+  margin-bottom: 1.25rem;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.25s var(--ease-soft);
+}
+
+.back:hover {
+  color: var(--leaf);
+  transform: translateX(-3px);
+}
+
+.title {
+  margin-top: 0.75rem;
+  max-width: 18ch;
+}
+
+.tagline {
+  margin-top: 1.5rem;
+  font-size: var(--step-1);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink-soft);
+  max-width: 46ch;
+  line-height: 1.4;
+}
+
+.description {
+  margin-top: 1.25rem;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  max-width: 60ch;
+  line-height: 1.6;
+}
+
+.ctas {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+}
+
+.galleryBlock {
+  background: var(--cream);
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+}
+

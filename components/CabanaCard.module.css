@@ -1,0 +1,116 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: 0 12px 32px var(--shadow);
+  transition: transform 0.4s var(--ease-soft), box-shadow 0.4s var(--ease-soft);
+  border: 1px solid rgba(58, 38, 22, 0.06);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 50px rgba(31, 26, 20, 0.12);
+}
+
+.media {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  position: relative;
+  background: var(--leaf-soft);
+}
+
+.mediaImage {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform 0.7s var(--ease-soft);
+}
+
+.card:hover .mediaImage {
+  transform: scale(1.05);
+}
+
+.body {
+  padding: var(--gap-lg) var(--gap-lg) var(--gap-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.capacity {
+  font-family: var(--font-hand);
+  color: var(--clay);
+  font-size: 1.25rem;
+  line-height: 1;
+  transform: rotate(-2deg);
+  display: inline-block;
+  width: max-content;
+}
+
+.name {
+  font-size: var(--step-2);
+  color: var(--bark-deep);
+  margin-top: 0.15rem;
+}
+
+.tagline {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.row {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-sm);
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(58, 38, 22, 0.08);
+}
+
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  color: var(--bark-deep);
+  font-size: 0.95rem;
+}
+
+.priceFrom {
+  font-family: var(--font-hand);
+  color: var(--clay);
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.price strong {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-variation-settings: 'opsz' 36, 'SOFT' 50;
+  font-weight: 500;
+}
+
+.priceUnit {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.cta {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--clay);
+  white-space: nowrap;
+  transition: transform 0.25s var(--ease-soft);
+}
+
+.cta:hover {
+  transform: translateX(3px);
+}

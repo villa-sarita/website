@@ -1,0 +1,59 @@
+.fab {
+  position: fixed;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--clay);
+  color: var(--cream);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(181, 70, 42, 0.35);
+  z-index: 60;
+  opacity: 0;
+  transform: translateY(20px) scale(0.85);
+  transition: opacity 0.4s var(--ease-soft), transform 0.4s var(--ease-soft),
+    background 0.25s, box-shadow 0.25s;
+}
+
+.fab.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.fab:hover {
+  background: var(--clay-dark);
+  box-shadow: 0 16px 40px rgba(181, 70, 42, 0.45);
+}
+
+.tooltip {
+  position: absolute;
+  right: calc(100% + 0.6rem);
+  top: 50%;
+  transform: translateY(-50%) rotate(-3deg);
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  color: var(--bark-deep);
+  background: var(--cream);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  box-shadow: 0 6px 18px var(--shadow);
+}
+
+.fab:hover .tooltip,
+.fab:focus-visible .tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(-3px) rotate(-3deg);
+}
+
+@media (max-width: 640px) {
+  .tooltip {
+    display: none;
+  }
+}

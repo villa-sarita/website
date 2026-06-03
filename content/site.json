@@ -1,0 +1,32 @@
+{
+  "brand": "Villa Sarita",
+  "tagline": "Ecolodge · Tumaco",
+  "canonicalUrl": "https://villasaritaecolodge.com",
+  "whatsappNumber": "+573173757798",
+  "phone": "+57 317 375 7798",
+  "phoneDisplay": "317 3757798",
+  "hostEmail": "villasarita703@gmail.com",
+  "location": {
+    "city": "Tumaco",
+    "region": "Nariño",
+    "country": "Colombia",
+    "neighborhood": "Barrio Cordialidad",
+    "street": "Carrera 18",
+    "addressNote": "Frente a Villa del Sol, a unos pasos de Casa Verde",
+    "googleMapsUrl": "https://www.google.com/maps/place/Caba%C3%B1as+Villa+Sarita/",
+    "googleMapsEmbedSrc": "https://maps.google.com/maps?q=Caba%C3%B1as+Villa+Sarita+Tumaco&t=&z=17&ie=UTF8&iwloc=&output=embed"
+  },
+  "checkIn": "14:00",
+  "checkOut": "13:00",
+  "currency": "COP",
+  "timezone": "America/Bogota",
+  "depositPercent": 20,
+  "social": {
+    "instagram": "villa_sarita1",
+    "instagramUrl": "https://www.instagram.com/villa_sarita1/",
+    "facebook": "Villa Sarita EcoLodge",
+    "facebookUrl": "https://www.facebook.com/people/Villa-Sarita-EcoLodge/",
+    "tiktok": "villa.sarita1",
+    "tiktokUrl": "https://www.tiktok.com/@villa.sarita1"
+  }
+}

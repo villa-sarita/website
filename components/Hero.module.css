@@ -1,0 +1,163 @@
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bark-deep);
+  padding-block: clamp(6rem, 16vh, 10rem) clamp(4rem, 10vh, 6rem);
+  isolation: isolate;
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/experiencias/exteriores/8.jpg');
+  background-size: cover;
+  background-position: center 35%;
+  background-repeat: no-repeat;
+}
+
+.scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(31, 36, 24, 0.25) 0%, rgba(31, 36, 24, 0.05) 30%, rgba(31, 36, 24, 0.65) 100%),
+    linear-gradient(90deg, rgba(31, 36, 24, 0.45) 0%, transparent 45%);
+}
+
+.sun,
+.frondLeft,
+.frondRight,
+.water,
+.sand {
+  display: none;
+}
+
+/* ---- Hero content ---- */
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gap-md);
+  max-width: 740px;
+}
+
+.superline {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sun);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.title {
+  font-size: var(--step-6);
+  font-family: var(--font-display);
+  line-height: 1.15;
+  padding-bottom: 0.18em;
+  letter-spacing: -0.005em;
+  position: relative;
+  color: var(--cream);
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.35);
+}
+
+.kicker {
+  display: block;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sun);
+  margin-top: 0.75rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 300;
+  color: var(--cream);
+  max-width: 32ch;
+  line-height: 1.3;
+  margin-top: var(--gap-md);
+  opacity: 0.95;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
+.blurb {
+  font-size: var(--step-0);
+  color: var(--cream);
+  max-width: 52ch;
+  line-height: 1.65;
+  opacity: 0.92;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap-md);
+  margin-top: var(--gap-md);
+}
+
+/* Force ghost button to be visible on the dark hero background */
+.ctas :global(.btn-ghost) {
+  color: var(--cream);
+  border-color: rgba(246, 239, 225, 0.5);
+  background: rgba(246, 239, 225, 0.06);
+  backdrop-filter: blur(4px);
+}
+
+.ctas :global(.btn-ghost:hover) {
+  background: var(--cream);
+  color: var(--bark-deep);
+  border-color: var(--cream);
+}
+
+/* ---- Scroll cue ---- */
+.scrollCue {
+  position: absolute;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cream);
+  opacity: 0.7;
+}
+
+.scrollLine {
+  width: 1px;
+  height: 36px;
+  background: var(--cream);
+  animation: pulseLine 2.2s ease-in-out infinite;
+}
+
+@keyframes pulseLine {
+  0%, 100% {
+    transform: scaleY(0.4);
+    transform-origin: top;
+  }
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+}

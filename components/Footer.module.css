@@ -1,0 +1,141 @@
+.footer {
+  background: var(--bark-deep);
+  color: var(--cream);
+  padding-block: clamp(3rem, 7vw, 5rem) 2rem;
+  margin-top: clamp(4rem, 8vw, 6rem);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-xl);
+}
+
+@media (min-width: 700px) {
+  .inner {
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: var(--gap-xxl);
+  }
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.brandLogo {
+  height: 120px;
+  width: auto;
+  display: block;
+  /* black logo → cream/white for dark footer */
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+.brandSlogan {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--sun);
+  margin-top: -0.25rem;
+}
+
+.tagline {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  opacity: 0.75;
+  max-width: 28ch;
+  line-height: 1.5;
+}
+
+.colHead {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--leaf-soft);
+  margin-bottom: var(--gap-md);
+}
+
+.colList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.colLink {
+  font-size: 0.95rem;
+  color: var(--cream);
+  opacity: 0.85;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.colLink:hover {
+  opacity: 1;
+  color: var(--leaf-soft);
+}
+
+.colMuted {
+  font-size: 0.9rem;
+  opacity: 0.55;
+}
+
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--gap-sm);
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(244, 236, 219, 0.12);
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+.bottomHand {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--sun);
+  opacity: 1;
+}
+
+.colHeadSocial {
+  margin-top: var(--gap-lg);
+}
+
+.socialRow {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(246, 239, 225, 0.08);
+  color: var(--cream);
+  border: 1px solid rgba(246, 239, 225, 0.18);
+  transition: background 0.2s, color 0.2s, transform 0.25s var(--ease-soft);
+}
+
+.socialLink:hover {
+  background: var(--leaf);
+  color: var(--bark-deep);
+  border-color: var(--leaf);
+  transform: translateY(-2px);
+}

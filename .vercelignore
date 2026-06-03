@@ -1,0 +1,58 @@
+# ============================================================================
+# .vercelignore — files NOT uploaded to Vercel during `vercel deploy`
+# ============================================================================
+# Vercel uses this file INSTEAD of .gitignore (no merging), so this list must
+# be self-contained. Keep in sync with .gitignore where appropriate.
+# ============================================================================
+
+# Dependencies — Vercel reinstalls from package.json on its build servers
+node_modules
+.pnp
+.pnp.*
+.yarn
+
+# Build output — Vercel builds fresh, we don't ship the local build
+.next
+out
+build
+*.tsbuildinfo
+
+# Environment files — secrets MUST come from Vercel's dashboard env vars, never the repo
+.env
+.env.*
+
+# Persisted booking data — guest PII, never deploy
+data
+
+# Heavy business-asset folders / files at project root that aren't part of the
+# deployed website. These were responsible for blowing up the upload to 537MB
+# on the previous attempt.
+Fotografías
+Manual de Marca*.pdf
+Catálogo Hospedaje*.pdf
+*.pdf
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+*.pem
+.vscode
+.idea
+Thumbs.db
+
+# Vercel state — the .vercel/ link directory is for local CLI use, not for upload
+.vercel
+
+# Project documentation — useful in the repo, not needed on the server
+AGENTS.md
+CLAUDE.md
+README.md
+
+# Index file backups, etc.
+index_backup.html

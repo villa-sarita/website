@@ -1,0 +1,146 @@
+[
+  {
+    "slug": "pareja-bijao",
+    "type": "couple",
+    "name": "Pareja Bijao",
+    "nameEn": "Bijao Couple's Cabin",
+    "capacity": 2,
+    "beds": "1 cama matrimonial",
+    "bedsEn": "1 queen bed",
+    "nightlyRateCop": 180000,
+    "tagline": "Un refugio íntimo para dos",
+    "taglineEn": "An intimate retreat for two",
+    "description": "La cabaña más íntima de Villa Sarita. Diseñada para parejas que buscan privacidad y calma: cama matrimonial, baño privado y un espacio acogedor rodeado de naturaleza.",
+    "descriptionEn": "Villa Sarita's most intimate cabin. Built for couples who want privacy and calm: a queen bed, private bathroom, and a cozy space surrounded by nature.",
+    "amenities": [
+      "privateBath",
+      "wifi",
+      "parking"
+    ],
+    "photos": [
+      "/photos/pareja-bijao-1.jpg",
+      "/photos/pareja-bijao-3.jpg"
+    ],
+    "coverPhoto": "/photos/pareja-bijao-cover.jpg"
+  },
+  {
+    "slug": "moringa",
+    "type": "family",
+    "name": "Moringa",
+    "nameEn": "Moringa",
+    "capacity": 4,
+    "beds": "1 cama matrimonial + 1 camarote",
+    "bedsEn": "1 queen bed + 1 bunk bed",
+    "nightlyRateCop": 260000,
+    "tagline": "Calma y mármol para cuatro",
+    "taglineEn": "Calm and marble for four",
+    "description": "Una cabaña espaciosa con cama matrimonial, camarote y baño privado con detalles en mármol. Aire acondicionado, nevera y todo lo necesario para una estadía cómoda en familia o entre amigos.",
+    "descriptionEn": "A spacious cabin with a queen bed, bunk bed, and a private bathroom with marble details. Air conditioning, fridge, and everything you need for a comfortable stay with family or friends.",
+    "amenities": [
+      "ac",
+      "fridge",
+      "bunkBed",
+      "privateBath",
+      "wifi",
+      "parking"
+    ],
+    "photos": [
+      "/photos/moringa-1.jpg",
+      "/photos/moringa-2.jpg",
+      "/photos/moringa-3.jpg",
+      "/photos/moringa-4.jpg",
+      "/photos/moringa-5.jpg"
+    ],
+    "coverPhoto": "/photos/moringa-cover.jpg"
+  },
+  {
+    "slug": "naidi",
+    "type": "family",
+    "name": "Naidí",
+    "nameEn": "Naidí",
+    "capacity": 4,
+    "beds": "1 cama matrimonial + 1 camarote",
+    "bedsEn": "1 queen bed + 1 bunk bed",
+    "nightlyRateCop": 280000,
+    "tagline": "Cocina propia para tu estadía",
+    "taglineEn": "Your own kitchen for the stay",
+    "description": "Cabaña con cocina amoblada, ideal para huéspedes que quieren preparar sus propios platos. Cama matrimonial, camarote y baño privado, todo con aire acondicionado.",
+    "descriptionEn": "A cabin with a fully equipped kitchen — ideal for guests who want to cook their own meals. Queen bed, bunk bed, and a private bathroom, all with air conditioning.",
+    "amenities": [
+      "ac",
+      "kitchen",
+      "bunkBed",
+      "privateBath",
+      "wifi",
+      "parking"
+    ],
+    "photos": [
+      "/photos/naidi-1.jpg",
+      "/photos/naidi-2.jpg",
+      "/photos/naidi-3.jpg",
+      "/photos/naidi-4.jpg",
+      "/photos/naidi-5.jpg"
+    ],
+    "coverPhoto": "/photos/naidi-cover.jpg"
+  },
+  {
+    "slug": "mango",
+    "type": "group",
+    "name": "Mango",
+    "nameEn": "Mango",
+    "capacity": 6,
+    "beds": "1 cama matrimonial + 2 camarotes",
+    "bedsEn": "1 queen bed + 2 bunk beds",
+    "nightlyRateCop": 360000,
+    "tagline": "Espacio para seis, en familia",
+    "taglineEn": "Space for six, family-style",
+    "description": "La cabaña con mayor capacidad para familias: una cama matrimonial y dos camarotes para alojar hasta seis personas con comodidad. Baño privado, aire acondicionado y wifi.",
+    "descriptionEn": "Our largest family cabin: one queen bed and two bunk beds for up to six guests in comfort. Private bathroom, air conditioning, and wifi.",
+    "amenities": [
+      "ac",
+      "bunkBed",
+      "privateBath",
+      "wifi",
+      "parking"
+    ],
+    "photos": [
+      "/photos/mango-1.jpg",
+      "/photos/mango-2.jpg",
+      "/photos/mango-3.jpg",
+      "/photos/mango-4.jpg"
+    ],
+    "coverPhoto": "/photos/mango-cover.jpg"
+  },
+  {
+    "slug": "apartaestudio-maranon",
+    "type": "group",
+    "name": "Apartaestudio Marañón",
+    "nameEn": "Marañón Studio Apartment",
+    "capacity": 6,
+    "beds": "3 camas",
+    "bedsEn": "3 beds",
+    "nightlyRateCop": 360000,
+    "tagline": "Un apartaestudio independiente",
+    "taglineEn": "An independent studio apartment",
+    "description": "Apartaestudio completo con tres camas, cocina amoblada, baño privado y aire acondicionado. La opción más independiente, ideal para grupos o familias que prefieren más autonomía durante su estadía.",
+    "descriptionEn": "A complete studio apartment with three beds, a full kitchen, private bathroom, and air conditioning. The most self-contained option — ideal for groups or families who prefer more autonomy during their stay.",
+    "amenities": [
+      "ac",
+      "kitchen",
+      "privateBath",
+      "wifi",
+      "parking"
+    ],
+    "photos": [
+      "/photos/apartaestudio-maranon-1.jpg",
+      "/photos/apartaestudio-maranon-2.jpg",
+      "/photos/apartaestudio-maranon-3.jpg",
+      "/photos/apartaestudio-maranon-4.jpg",
+      "/photos/apartaestudio-maranon-5.jpg",
+      "/photos/apartaestudio-maranon-6.jpg",
+      "/photos/apartaestudio-maranon-7.jpg",
+      "/photos/apartaestudio-maranon-8.jpg"
+    ],
+    "coverPhoto": "/photos/apartaestudio-maranon-cover.jpg"
+  }
+]

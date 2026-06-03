@@ -1,0 +1,100 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.choice {
+  position: relative;
+  text-align: left;
+  padding: 1rem 1.2rem;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--cream-deep);
+  background: var(--paper);
+  color: var(--bark-deep);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.choice:hover {
+  border-color: var(--clay);
+}
+
+.active {
+  border-color: var(--clay);
+  background: rgba(181, 70, 42, 0.06);
+  color: var(--clay);
+}
+
+.choiceDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.active .choiceDot::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.whatsappBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+  border-radius: var(--r-md);
+  background: rgba(124, 172, 86, 0.08);
+  border: 1px solid rgba(124, 172, 86, 0.22);
+}
+
+.whatsappHelp {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  max-width: none;
+}
+
+.whatsappCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  align-self: flex-start;
+  padding: 0.8em 1.5em;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.25s var(--ease-soft), box-shadow 0.25s;
+  box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
+}
+
+.whatsappCta:hover {
+  background: #1eb955;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(37, 211, 102, 0.35);
+}
