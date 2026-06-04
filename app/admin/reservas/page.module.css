@@ -251,3 +251,39 @@
   color: var(--leaf-dark);
   text-decoration: none;
 }
+
+/* Status badge — colored pill next to the booking header */
+.statusBadge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  vertical-align: middle;
+}
+
+.status-paid {
+  background: #d9eccc;
+  color: #2e4a2c;
+  border: 1px solid #b3d49c;
+}
+
+.status-pending {
+  background: #fceec0;
+  color: #6b4f12;
+  border: 1px solid #ead9b8;
+}
+
+.status-cancelled {
+  background: #ebe3d6;
+  color: #6a5b4a;
+  border: 1px solid #d3c8b5;
+}
+
+.status-failed {
+  background: #f7d5cd;
+  color: #7a2a18;
+  border: 1px solid #ea9886;
+}

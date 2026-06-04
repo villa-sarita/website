@@ -1,8 +1,7 @@
 import { notFound } from 'next/navigation';
-import { existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { timingSafeEqual } from 'node:crypto';
 
+import { listBookings, type BookingRecord, type BookingStatus } from '@/lib/bookingStore';
 import siteData from '@/content/site.json';
 
 import styles from './page.module.css';
@@ -10,41 +9,11 @@ import styles from './page.module.css';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-interface BookingRecord {
-  reference: string;
-  cabana: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  totalCop: number;
-  depositCop: number;
-  guestName: string;
-  guestEmail?: string;
-  guestPhone?: string;
-  hasEvent: boolean;
-  eventDescription?: string;
-  createdAt?: string;
-}
-
 function safeEqual(a: string, b: string): boolean {
   const ab = Buffer.from(a);
   const bb = Buffer.from(b);
   if (ab.length !== bb.length) return false;
   return timingSafeEqual(ab, bb);
-}
-
-function loadAllBookings(): BookingRecord[] {
-  const path =
-    process.env.BOOKING_STORE_PATH ?? join(process.cwd(), 'data', 'bookings.json');
-  if (!existsSync(path)) return [];
-  try {
-    const raw = readFileSync(path, 'utf8');
-    const obj = JSON.parse(raw) as Record<string, BookingRecord>;
-    return Object.values(obj);
-  } catch (err) {
-    console.error('admin reservas: failed to load bookings.json', err);
-    return [];
-  }
 }
 
 function formatCurrency(amount: number): string {
@@ -56,6 +25,7 @@ function formatCurrency(amount: number): string {
 }
 
 function formatDate(iso: string): string {
+  if (!iso || iso === '—') return iso;
   const [y, m, d] = iso.split('-').map(Number);
   if (!y || !m || !d) return iso;
   return new Date(y, m - 1, d).toLocaleDateString('es-CO', {
@@ -69,8 +39,16 @@ function formatDate(iso: string): string {
 function buildWhatsAppLink(phone: string | undefined, message: string): string | null {
   if (!phone) return null;
   const normalised = phone.replace(/[^0-9]/g, '');
+  if (!normalised) return null;
   return `https://wa.me/${normalised}?text=${encodeURIComponent(message)}`;
 }
+
+const STATUS_LABEL: Record<BookingStatus, string> = {
+  pending: 'Pendiente',
+  paid: 'Pagada',
+  cancelled: 'Cancelada',
+  failed: 'Fallida',
+};
 
 interface PageProps {
   searchParams: Promise<{ token?: string }>;
@@ -79,23 +57,26 @@ interface PageProps {
 export default async function AdminReservasPage({ searchParams }: PageProps) {
   const { token } = await searchParams;
   const expected = process.env.ADMIN_TOKEN;
-
-  // Token must be configured AND must match exactly. Constant-time comparison.
   if (!expected || !token || !safeEqual(token, expected)) {
     notFound();
   }
 
-  const bookings = loadAllBookings();
-  // Sort by check-in date ascending (next stay first), then by createdAt desc as tiebreaker.
-  bookings.sort((a, b) => {
-    const dateCmp = a.checkIn.localeCompare(b.checkIn);
-    if (dateCmp !== 0) return dateCmp;
-    return (b.createdAt ?? '').localeCompare(a.createdAt ?? '');
-  });
+  const bookings = await listBookings();
 
+  // Split into upcoming / past based on check-in date.
   const today = new Date().toISOString().slice(0, 10);
-  const upcoming = bookings.filter((b) => b.checkIn >= today);
-  const past = bookings.filter((b) => b.checkIn < today);
+  const upcoming = bookings.filter((b) => b.checkIn >= today && b.checkIn !== '—');
+  const past = bookings.filter((b) => b.checkIn < today && b.checkIn !== '—');
+  const undated = bookings.filter((b) => b.checkIn === '—');
+
+  // Counts by status (across all bookings).
+  const counts: Record<BookingStatus, number> = {
+    pending: 0,
+    paid: 0,
+    cancelled: 0,
+    failed: 0,
+  };
+  for (const b of bookings) counts[b.status] = (counts[b.status] ?? 0) + 1;
 
   return (
     <div className={styles.page}>
@@ -104,7 +85,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         <p className={styles.subtitle}>
           {bookings.length === 0
             ? 'Sin reservas todavía.'
-            : `${upcoming.length} próximas · ${past.length} pasadas`}
+            : `${counts.paid} pagadas · ${counts.pending} pendientes · ${counts.cancelled + counts.failed} canceladas/fallidas`}
         </p>
       </header>
 
@@ -125,6 +106,17 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
           <ul className={styles.list}>
             {past.map((b) => (
               <BookingRow key={b.reference} booking={b} muted />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {undated.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHead}>Sin fechas (revisar)</h2>
+          <ul className={styles.list}>
+            {undated.map((b) => (
+              <BookingRow key={b.reference} booking={b} />
             ))}
           </ul>
         </section>
@@ -154,6 +146,14 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
   );
 }
 
+function StatusBadge({ status }: { status: BookingStatus }) {
+  return (
+    <span className={`${styles.statusBadge} ${styles[`status-${status}`]}`}>
+      {STATUS_LABEL[status]}
+    </span>
+  );
+}
+
 function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolean }) {
   const balance = booking.totalCop - booking.depositCop;
   const waLink = buildWhatsAppLink(
@@ -171,7 +171,12 @@ function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolea
           </span>
         </div>
         <div className={styles.guests}>
-          {booking.guests} {booking.guests === 1 ? 'huésped' : 'huéspedes'}
+          <StatusBadge status={booking.status} />
+          {booking.guests > 0 && (
+            <span style={{ marginLeft: 8 }}>
+              {booking.guests} {booking.guests === 1 ? 'huésped' : 'huéspedes'}
+            </span>
+          )}
           {booking.hasEvent && <span className={styles.eventBadge}>Evento</span>}
         </div>
       </div>
@@ -188,7 +193,7 @@ function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolea
           <strong>{formatCurrency(booking.totalCop)}</strong>
         </div>
         <div className={`${styles.priceLine} ${styles.deposit}`}>
-          <span>Anticipo pagado</span>
+          <span>Anticipo {booking.status === 'paid' ? 'pagado' : 'pendiente'}</span>
           <strong>{formatCurrency(booking.depositCop)}</strong>
         </div>
         <div className={`${styles.priceLine} ${styles.balance}`}>
@@ -222,7 +227,12 @@ function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolea
         )}
       </div>
 
-      <div className={styles.ref}>{booking.reference}</div>
+      <div className={styles.ref}>
+        {booking.reference}
+        {booking.transactionId && (
+          <> · Wompi <code>{booking.transactionId}</code></>
+        )}
+      </div>
     </li>
   );
 }

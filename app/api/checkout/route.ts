@@ -142,21 +142,28 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'config_error' }, { status: 500 });
   }
 
-  // 10. Persist booking (file-backed)
-  saveBooking(reference, {
-    reference,
-    cabana: getCabanaName(cabana, payload.locale),
-    checkIn: payload.checkIn,
-    checkOut: payload.checkOut,
-    guests: payload.guests,
-    totalCop: serverBreakdown.subtotal,
-    depositCop: serverBreakdown.deposit,
-    guestName: payload.guestName,
-    guestEmail: payload.guestEmail,
-    guestPhone: payload.guestPhone,
-    hasEvent: !!payload.hasEvent,
-    eventDescription: payload.eventDescription ?? '',
-  });
+  // 10. Persist booking (Upstash Redis in prod, filesystem fallback in dev).
+  //     Status starts as "pending"; the Wompi webhook flips it to "paid".
+  try {
+    await saveBooking(reference, {
+      reference,
+      cabana: getCabanaName(cabana, payload.locale),
+      checkIn: payload.checkIn,
+      checkOut: payload.checkOut,
+      guests: payload.guests,
+      totalCop: serverBreakdown.subtotal,
+      depositCop: serverBreakdown.deposit,
+      guestName: payload.guestName,
+      guestEmail: payload.guestEmail,
+      guestPhone: payload.guestPhone,
+      hasEvent: !!payload.hasEvent,
+      eventDescription: payload.eventDescription ?? '',
+    });
+  } catch (err) {
+    console.error('[checkout] saveBooking failed', err);
+    // Don't block the checkout if the store write fails — the webhook
+    // will recreate the booking record from Wompi's payload as a fallback.
+  }
 
   return NextResponse.json({ checkoutUrl, reference });
 }
