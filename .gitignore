@@ -50,3 +50,12 @@ next-env.d.ts
 /Manual de Marca*.pdf
 /Catálogo Hospedaje*.pdf
 *.pdf
+
+# Stray screenshots / pasted images that sometimes land in the project root
+# from drag-and-drop — never commit these (often contain WhatsApp chats etc.)
+/WhatsApp Image*.jpeg
+/WhatsApp Image*.jpg
+/WhatsApp Image*.png
+/Screenshot*.png
+/Captura de pantalla*.png
+*:Zone.Identifier
