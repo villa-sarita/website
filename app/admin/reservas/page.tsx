@@ -1,9 +1,10 @@
 import { notFound } from 'next/navigation';
 import { timingSafeEqual } from 'node:crypto';
 
+import { BookingList } from '@/components/BookingList';
 import { ManualBookingForm } from '@/components/ManualBookingForm';
 import { cabanas } from '@/lib/cabanas';
-import { listBookings, type BookingRecord, type BookingStatus, type PaymentMethod } from '@/lib/bookingStore';
+import { listBookings, type BookingStatus } from '@/lib/bookingStore';
 import siteData from '@/content/site.json';
 
 import styles from './page.module.css';
@@ -18,48 +19,6 @@ function safeEqual(a: string, b: string): boolean {
   return timingSafeEqual(ab, bb);
 }
 
-function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-function formatDate(iso: string): string {
-  if (!iso || iso === '—') return iso;
-  const [y, m, d] = iso.split('-').map(Number);
-  if (!y || !m || !d) return iso;
-  return new Date(y, m - 1, d).toLocaleDateString('es-CO', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function buildWhatsAppLink(phone: string | undefined, _message?: string): string | null {
-  if (!phone) return null;
-  const normalised = phone.replace(/[^0-9]/g, '');
-  if (!normalised) return null;
-  // Always open a blank conversation — pre-filled messages felt templated/spammy.
-  return `https://wa.me/${normalised}`;
-}
-
-const STATUS_LABEL: Record<BookingStatus, string> = {
-  pending: 'Pendiente',
-  paid: 'Pagada',
-  cancelled: 'Cancelada',
-  failed: 'Fallida',
-};
-
-const PAYMENT_LABEL: Record<PaymentMethod, string> = {
-  wompi: 'Wompi',
-  cash: 'efectivo',
-  transfer: 'transferencia',
-  other: 'otro',
-};
-
 interface PageProps {
   searchParams: Promise<{ token?: string }>;
 }
@@ -71,36 +30,43 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
     notFound();
   }
 
-  const bookings = await listBookings();
+  const allBookings = await listBookings();
 
-  // Split into upcoming / past based on check-in date.
-  const today = new Date().toISOString().slice(0, 10);
-  const upcoming = bookings.filter((b) => b.checkIn >= today && b.checkIn !== '—');
-  const past = bookings.filter((b) => b.checkIn < today && b.checkIn !== '—');
-  const undated = bookings.filter((b) => b.checkIn === '—');
-
-  // Counts by status (across all bookings).
+  // Counters across everything.
   const counts: Record<BookingStatus, number> = {
     pending: 0,
     paid: 0,
     cancelled: 0,
     failed: 0,
   };
-  for (const b of bookings) counts[b.status] = (counts[b.status] ?? 0) + 1;
+  for (const b of allBookings) counts[b.status] = (counts[b.status] ?? 0) + 1;
+
+  // Active = anything not cancelled or failed.
+  const active = allBookings.filter(
+    (b) => b.status !== 'cancelled' && b.status !== 'failed',
+  );
+  const cancelled = allBookings.filter(
+    (b) => b.status === 'cancelled' || b.status === 'failed',
+  );
+
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = active.filter((b) => b.checkIn >= today && b.checkIn !== '—');
+  const past = active.filter((b) => b.checkIn < today && b.checkIn !== '—');
+  const undated = active.filter((b) => b.checkIn === '—');
 
   return (
     <div className={styles.page}>
       <header className={styles.header}>
         <h1 className={styles.title}>Reservas Villa Sarita</h1>
         <p className={styles.subtitle}>
-          {bookings.length === 0
+          {allBookings.length === 0
             ? 'Sin reservas todavía.'
             : `${counts.paid} pagadas · ${counts.pending} pendientes · ${counts.cancelled + counts.failed} canceladas/fallidas`}
         </p>
       </header>
 
       <ManualBookingForm
-        token={token!}
+        token={token}
         cabanas={cabanas.map((c) => ({
           slug: c.slug,
           name: c.name,
@@ -112,37 +78,37 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       {upcoming.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Próximas</h2>
-          <ul className={styles.list}>
-            {upcoming.map((b) => (
-              <BookingRow key={b.reference} booking={b} />
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {past.length > 0 && (
-        <section className={styles.section}>
-          <h2 className={styles.sectionHead}>Pasadas</h2>
-          <ul className={styles.list}>
-            {past.map((b) => (
-              <BookingRow key={b.reference} booking={b} muted />
-            ))}
-          </ul>
+          <BookingList bookings={upcoming} token={token} />
         </section>
       )}
 
       {undated.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Sin fechas (revisar)</h2>
-          <ul className={styles.list}>
-            {undated.map((b) => (
-              <BookingRow key={b.reference} booking={b} />
-            ))}
-          </ul>
+          <BookingList bookings={undated} token={token} />
         </section>
       )}
 
-      {bookings.length === 0 && (
+      {past.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHead}>Pasadas</h2>
+          <BookingList bookings={past} token={token} />
+        </section>
+      )}
+
+      {cancelled.length > 0 && (
+        <section className={styles.section}>
+          <h2 className={styles.sectionHead}>Canceladas</h2>
+          <BookingList
+            bookings={cancelled}
+            token={token}
+            collapsible
+            defaultCollapsed
+          />
+        </section>
+      )}
+
+      {allBookings.length === 0 && (
         <p className={styles.empty}>
           Cuando llegue una reserva, aparecerá aquí automáticamente.
         </p>
@@ -152,10 +118,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         Actualizado: {new Date().toLocaleString('es-CO')}
         {' · '}
         <a
-          href={buildWhatsAppLink(
-            siteData.whatsappNumber,
-            '¿Cómo va Villa Sarita hoy?',
-          ) ?? '#'}
+          href={`https://wa.me/${siteData.whatsappNumber.replace(/[^0-9]/g, '')}`}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -163,111 +126,5 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         </a>
       </footer>
     </div>
-  );
-}
-
-function StatusBadge({ status }: { status: BookingStatus }) {
-  return (
-    <span className={`${styles.statusBadge} ${styles[`status-${status}`]}`}>
-      {STATUS_LABEL[status]}
-    </span>
-  );
-}
-
-function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolean }) {
-  const balance = booking.totalCop - booking.depositCop;
-  const waLink = buildWhatsAppLink(
-    booking.guestPhone,
-    `Hola ${booking.guestName.split(' ')[0]}, te escribo de Villa Sarita por tu reserva (${booking.reference}).`,
-  );
-
-  return (
-    <li className={`${styles.row} ${muted ? styles.rowMuted : ''}`}>
-      <div className={styles.rowHead}>
-        <div>
-          <span className={styles.cabin}>{booking.cabana}</span>
-          <span className={styles.dates}>
-            {formatDate(booking.checkIn)} → {formatDate(booking.checkOut)}
-          </span>
-        </div>
-        <div className={styles.guests}>
-          <StatusBadge status={booking.status} />
-          {booking.source === 'manual' && (
-            <span className={styles.sourceBadge}>Manual</span>
-          )}
-          {booking.paymentMethod && booking.status === 'paid' && (
-            <span className={styles.payMethod}>
-              {PAYMENT_LABEL[booking.paymentMethod]}
-            </span>
-          )}
-          {booking.guests > 0 && (
-            <span style={{ marginLeft: 8 }}>
-              {booking.guests} {booking.guests === 1 ? 'huésped' : 'huéspedes'}
-            </span>
-          )}
-          {booking.hasEvent && <span className={styles.eventBadge}>Evento</span>}
-        </div>
-      </div>
-
-      <div className={styles.guestBlock}>
-        <strong className={styles.guestName}>{booking.guestName}</strong>
-        {booking.guestPhone && <span className={styles.guestPhone}>{booking.guestPhone}</span>}
-        {booking.guestEmail && <span className={styles.guestEmail}>{booking.guestEmail}</span>}
-      </div>
-
-      <div className={styles.priceBlock}>
-        <div className={styles.priceLine}>
-          <span>Total estadía</span>
-          <strong>{formatCurrency(booking.totalCop)}</strong>
-        </div>
-        <div className={`${styles.priceLine} ${styles.deposit}`}>
-          <span>Anticipo {booking.status === 'paid' ? 'pagado' : 'pendiente'}</span>
-          <strong>{formatCurrency(booking.depositCop)}</strong>
-        </div>
-        <div className={`${styles.priceLine} ${styles.balance}`}>
-          <span>Saldo al llegar</span>
-          <strong>{formatCurrency(balance)}</strong>
-        </div>
-      </div>
-
-      {booking.eventDescription && (
-        <div className={styles.eventBlock}>
-          <span className={styles.eventLabel}>Evento solicitado:</span>
-          <p>{booking.eventDescription}</p>
-        </div>
-      )}
-
-      {booking.notes && (
-        <div className={styles.eventBlock}>
-          <span className={styles.eventLabel}>Notas:</span>
-          <p>{booking.notes}</p>
-        </div>
-      )}
-
-      <div className={styles.actions}>
-        {waLink && (
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.actionWa}
-          >
-            WhatsApp al huésped
-          </a>
-        )}
-        {booking.guestPhone && (
-          <a href={`tel:${booking.guestPhone}`} className={styles.actionCall}>
-            Llamar
-          </a>
-        )}
-      </div>
-
-      <div className={styles.ref}>
-        {booking.reference}
-        {booking.transactionId && (
-          <> · Wompi <code>{booking.transactionId}</code></>
-        )}
-      </div>
-    </li>
   );
 }

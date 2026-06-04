@@ -33,6 +33,10 @@ export type BookingRecord = Omit<HostNotificationParams, 'transactionId'> & {
   createdAt: string;
   updatedAt?: string;
   transactionId?: string;
+  /** Cancellation metadata — populated by cancelBooking(). */
+  cancelledAt?: string;
+  cancelledBy?: string;
+  cancellationReason?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -207,6 +211,39 @@ export async function updateBookingStatus(
     return updated;
   }
   return null;
+}
+
+/**
+ * Mark a booking as cancelled. Records who did it, when, and why. Once
+ * status='cancelled' the BLOCKING_STATUSES filter in availability.ts no
+ * longer treats it as taking up the cabin, so the freed dates become
+ * bookable again on both the public site and the manual-booking form.
+ */
+export async function cancelBooking(
+  reference: string,
+  reason: string,
+  actor: string,
+): Promise<BookingRecord | null> {
+  const existing = await loadBooking(reference);
+  if (!existing) return null;
+  const now = new Date().toISOString();
+  const updated: BookingRecord = {
+    ...existing,
+    status: 'cancelled',
+    updatedAt: now,
+    cancelledAt: now,
+    cancelledBy: actor,
+    cancellationReason: reason,
+  };
+  const redis = getRedis();
+  if (redis) {
+    await redis.set(KEY_BOOKING(reference), JSON.stringify(updated));
+  } else {
+    const state = readFs();
+    state.bookings[reference] = updated;
+    writeFs(state);
+  }
+  return updated;
 }
 
 export async function hasProcessedTransaction(
