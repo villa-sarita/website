@@ -64,12 +64,21 @@ export async function sendHostNotification(p: HostNotificationParams) {
     </div>
   `;
 
-  return getClient().emails.send({
+  const result = await getClient().emails.send({
     from,
     to,
     subject,
     html,
   });
+  if (result.error) {
+    // Resend SDK returns errors in {data, error} rather than throwing.
+    // Surface them so the caller (webhook) can log + react.
+    const msg = typeof result.error === 'object' && result.error
+      ? (('message' in result.error ? (result.error as { message: unknown }).message : null) ?? JSON.stringify(result.error))
+      : String(result.error);
+    throw new Error(`Resend send failed: ${msg}`);
+  }
+  return result;
 }
 
 function escapeHtml(str: string): string {
