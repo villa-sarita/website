@@ -36,11 +36,12 @@ function formatDate(iso: string): string {
   });
 }
 
-function buildWhatsAppLink(phone: string | undefined, message: string): string | null {
+function buildWhatsAppLink(phone: string | undefined, _message?: string): string | null {
   if (!phone) return null;
   const normalised = phone.replace(/[^0-9]/g, '');
   if (!normalised) return null;
-  return `https://wa.me/${normalised}?text=${encodeURIComponent(message)}`;
+  // Always open a blank conversation — pre-filled messages felt templated/spammy.
+  return `https://wa.me/${normalised}`;
 }
 
 const STATUS_LABEL: Record<BookingStatus, string> = {

@@ -1,6 +1,12 @@
-export function buildWhatsAppLink(phone: string, message: string): string {
+/**
+ * Build a wa.me link that opens a *blank* WhatsApp conversation with the
+ * host. Earlier versions pre-filled a generated message via `?text=…`, but
+ * those auto-messages read as templated/spammy to guests — so the second
+ * argument is accepted for compatibility with existing callers but ignored.
+ */
+export function buildWhatsAppLink(phone: string, _message?: string): string {
   const normalised = phone.replace(/[^0-9]/g, '');
-  return `https://wa.me/${normalised}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${normalised}`;
 }
 
 export interface BookingSummaryForWhatsApp {
