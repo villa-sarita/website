@@ -109,6 +109,15 @@ export function BookingForm({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (res.status === 409 && data.error === 'dates_unavailable') {
+          setError(
+            locale === 'en'
+              ? 'Those dates were just taken. Please pick different dates — the calendar will refresh on reload.'
+              : 'Esas fechas acaban de ser reservadas. Por favor elige otras fechas — el calendario se actualiza al recargar.',
+          );
+          setSubmitting(false);
+          return;
+        }
         throw new Error(data.error || 'Checkout failed');
       }
       const { checkoutUrl, reference } = await res.json();

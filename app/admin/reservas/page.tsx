@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import { timingSafeEqual } from 'node:crypto';
 
-import { listBookings, type BookingRecord, type BookingStatus } from '@/lib/bookingStore';
+import { ManualBookingForm } from '@/components/ManualBookingForm';
+import { cabanas } from '@/lib/cabanas';
+import { listBookings, type BookingRecord, type BookingStatus, type PaymentMethod } from '@/lib/bookingStore';
 import siteData from '@/content/site.json';
 
 import styles from './page.module.css';
@@ -51,6 +53,13 @@ const STATUS_LABEL: Record<BookingStatus, string> = {
   failed: 'Fallida',
 };
 
+const PAYMENT_LABEL: Record<PaymentMethod, string> = {
+  wompi: 'Wompi',
+  cash: 'efectivo',
+  transfer: 'transferencia',
+  other: 'otro',
+};
+
 interface PageProps {
   searchParams: Promise<{ token?: string }>;
 }
@@ -89,6 +98,16 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
             : `${counts.paid} pagadas · ${counts.pending} pendientes · ${counts.cancelled + counts.failed} canceladas/fallidas`}
         </p>
       </header>
+
+      <ManualBookingForm
+        token={token!}
+        cabanas={cabanas.map((c) => ({
+          slug: c.slug,
+          name: c.name,
+          rate: c.nightlyRateCop,
+          capacity: c.capacity,
+        }))}
+      />
 
       {upcoming.length > 0 && (
         <section className={styles.section}>
@@ -173,6 +192,14 @@ function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolea
         </div>
         <div className={styles.guests}>
           <StatusBadge status={booking.status} />
+          {booking.source === 'manual' && (
+            <span className={styles.sourceBadge}>Manual</span>
+          )}
+          {booking.paymentMethod && booking.status === 'paid' && (
+            <span className={styles.payMethod}>
+              {PAYMENT_LABEL[booking.paymentMethod]}
+            </span>
+          )}
           {booking.guests > 0 && (
             <span style={{ marginLeft: 8 }}>
               {booking.guests} {booking.guests === 1 ? 'huésped' : 'huéspedes'}
@@ -207,6 +234,13 @@ function BookingRow({ booking, muted }: { booking: BookingRecord; muted?: boolea
         <div className={styles.eventBlock}>
           <span className={styles.eventLabel}>Evento solicitado:</span>
           <p>{booking.eventDescription}</p>
+        </div>
+      )}
+
+      {booking.notes && (
+        <div className={styles.eventBlock}>
+          <span className={styles.eventLabel}>Notas:</span>
+          <p>{booking.notes}</p>
         </div>
       )}
 

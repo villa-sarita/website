@@ -1,6 +1,6 @@
 'use client';
 
-import { DayPicker, type DateRange } from 'react-day-picker';
+import { DayPicker, type DateRange, type Matcher } from 'react-day-picker';
 import { es, enUS } from 'date-fns/locale';
 import { useState, useRef, useEffect } from 'react';
 
@@ -15,6 +15,8 @@ interface DateRangePickerProps {
   onChange: (range: DateRange | undefined) => void;
   labels: { checkIn: string; checkOut: string };
   minDate?: Date;
+  /** Extra dates to grey out in the calendar (e.g. already-booked nights). */
+  disabledMatchers?: Matcher | Matcher[];
 }
 
 export function DateRangePicker({
@@ -23,6 +25,7 @@ export function DateRangePicker({
   onChange,
   labels,
   minDate = new Date(),
+  disabledMatchers,
 }: DateRangePickerProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -67,7 +70,14 @@ export function DateRangePicker({
             selected={value}
             onSelect={onChange}
             locale={locale === 'en' ? enUS : es}
-            disabled={{ before: minDate }}
+            disabled={[
+              { before: minDate },
+              ...(Array.isArray(disabledMatchers)
+                ? disabledMatchers
+                : disabledMatchers
+                  ? [disabledMatchers]
+                  : []),
+            ]}
             numberOfMonths={1}
             weekStartsOn={1}
           />

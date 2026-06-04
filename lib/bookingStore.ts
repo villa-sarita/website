@@ -19,9 +19,17 @@ import { Redis } from '@upstash/redis';
 import type { HostNotificationParams } from './email';
 
 export type BookingStatus = 'pending' | 'paid' | 'cancelled' | 'failed';
+export type BookingSource = 'online' | 'manual';
+export type PaymentMethod = 'wompi' | 'cash' | 'transfer' | 'other';
 
 export type BookingRecord = Omit<HostNotificationParams, 'transactionId'> & {
+  /** The cabin slug — needed to filter availability per-cabin. */
+  cabanaSlug?: string;
   status: BookingStatus;
+  source?: BookingSource;
+  paymentMethod?: PaymentMethod;
+  /** Free-form notes the host can attach to a manual booking. */
+  notes?: string;
   createdAt: string;
   updatedAt?: string;
   transactionId?: string;

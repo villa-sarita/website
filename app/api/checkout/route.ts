@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { findConflicts } from '@/lib/availability';
 import { saveBooking } from '@/lib/bookingStore';
 import { getCabana, getCabanaName } from '@/lib/cabanas';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
@@ -118,6 +119,19 @@ export async function POST(request: Request) {
     );
   }
 
+  // 8b. Availability check — reject if any pending/paid booking for this
+  //     cabin overlaps the requested dates. Covers BOTH another guest
+  //     who's already in checkout AND a manual reservation the host
+  //     entered after a phone call.
+  const { hasConflict } = await findConflicts(
+    payload.cabanaSlug,
+    payload.checkIn,
+    payload.checkOut,
+  );
+  if (hasConflict) {
+    return NextResponse.json({ error: 'dates_unavailable' }, { status: 409 });
+  }
+
   // 9. Build Wompi checkout
   const reference = buildReference(payload.cabanaSlug);
   const amountInCents = Math.round(serverBreakdown.deposit * 100);
@@ -148,6 +162,9 @@ export async function POST(request: Request) {
     await saveBooking(reference, {
       reference,
       cabana: getCabanaName(cabana, payload.locale),
+      cabanaSlug: payload.cabanaSlug,
+      source: 'online',
+      paymentMethod: 'wompi',
       checkIn: payload.checkIn,
       checkOut: payload.checkOut,
       guests: payload.guests,

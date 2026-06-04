@@ -287,3 +287,25 @@
   color: #7a2a18;
   border: 1px solid #ea9886;
 }
+
+.sourceBadge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  background: #e8e1d2;
+  color: #5a4a2f;
+  border: 1px solid #d3c8b5;
+}
+
+.payMethod {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}

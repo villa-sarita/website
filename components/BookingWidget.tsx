@@ -1,8 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
-import type { DateRange } from 'react-day-picker';
+import { useEffect, useMemo, useState } from 'react';
+import type { DateRange, Matcher } from 'react-day-picker';
 
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
 import type { Cabana } from '@/lib/cabanas';
@@ -21,10 +21,58 @@ interface BookingWidgetProps {
   dict: Dictionary;
 }
 
+interface BlockedRange {
+  checkIn: string;
+  checkOut: string;
+  status: 'pending' | 'paid' | 'cancelled' | 'failed';
+}
+
+/** Convert a YYYY-MM-DD ISO string to a local Date at noon (DST-safe). */
+function parseDate(iso: string): Date {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d, 12);
+}
+
 export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
   const router = useRouter();
   const [range, setRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState(Math.min(2, cabana.capacity));
+  const [blocked, setBlocked] = useState<BlockedRange[]>([]);
+
+  // Fetch already-booked ranges for this cabin so we can grey them out
+  // in the calendar. Don't block render on this — picker still works
+  // without the data, the server will still reject conflicts at submit.
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/availability?cabana=${encodeURIComponent(cabana.slug)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.ranges) setBlocked(data.ranges as BlockedRange[]);
+      })
+      .catch(() => {
+        /* non-fatal — submit-time check still catches it */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [cabana.slug]);
+
+  // Each blocked range covers the NIGHTS from checkIn (inclusive) to
+  // checkOut (exclusive) — the standard hospitality convention. Same-day
+  // turnover is allowed so we don't include the checkout day.
+  const disabledMatchers = useMemo<Matcher[]>(
+    () =>
+      blocked.map((b) => {
+        const from = parseDate(b.checkIn);
+        const to = parseDate(b.checkOut);
+        // react-day-picker { from, to } is INCLUSIVE on both ends.
+        // Subtract a day from `to` so the checkout day stays selectable.
+        const checkoutDay = new Date(to);
+        checkoutDay.setDate(checkoutDay.getDate() - 1);
+        return { from, to: checkoutDay };
+      }),
+    [blocked],
+  );
 
   const nights = useMemo(
     () => (range?.from && range?.to ? diffInNights(range.from, range.to) : 0),
@@ -69,6 +117,7 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
         value={range}
         onChange={setRange}
         labels={{ checkIn: dict.booking.checkIn, checkOut: dict.booking.checkOut }}
+        disabledMatchers={disabledMatchers}
       />
 
       <GuestCounter
