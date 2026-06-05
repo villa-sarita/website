@@ -19,7 +19,14 @@ import { Redis } from '@upstash/redis';
 import type { HostNotificationParams } from './email';
 
 export type BookingStatus = 'pending' | 'paid' | 'cancelled' | 'failed';
-export type BookingSource = 'online' | 'manual';
+/**
+ * Where the booking originated.
+ *   online         — guest paid through the public site via Wompi
+ *   manual         — host recorded a phone/in-person booking from the admin form
+ *   event_inquiry  — guest filled the standalone event form (no Wompi charge;
+ *                    the host quotes per-event over WhatsApp)
+ */
+export type BookingSource = 'online' | 'manual' | 'event_inquiry';
 export type PaymentMethod = 'wompi' | 'cash' | 'transfer' | 'other';
 
 export type BookingRecord = Omit<HostNotificationParams, 'transactionId'> & {
@@ -37,6 +44,9 @@ export type BookingRecord = Omit<HostNotificationParams, 'transactionId'> & {
   cancelledAt?: string;
   cancelledBy?: string;
   cancellationReason?: string;
+  /** Event-inquiry fields — set when source === 'event_inquiry'. */
+  eventType?: string; // slug from content/experiencias.json or 'otro'
+  eventTime?: string; // free-form, e.g. "tarde", "18:00"
 };
 
 // ---------------------------------------------------------------------------

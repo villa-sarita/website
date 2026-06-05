@@ -125,9 +125,17 @@ export default async function HomePage({ params }: Props) {
               <SectionLabel>{dict.home.experienceLabel}</SectionLabel>
               <h2>{dict.home.experienceTitle}</h2>
               <p className={styles.lede}>{dict.home.experienceBlurb}</p>
-              <Link href={`/${locale}/experiencia`} className="btn btn-jungle">
-                {dict.home.experienceCta}
-              </Link>
+              <div className={styles.experienceCtas}>
+                <Link href={`/${locale}/experiencia`} className="btn btn-jungle">
+                  {dict.home.experienceCta}
+                </Link>
+                <Link
+                  href={`/${locale}/reservar/evento`}
+                  className="btn btn-ghost"
+                >
+                  {dict.home.experienceBookCta}
+                </Link>
+              </div>
             </Reveal>
           </div>
           <Reveal delay={0.2}>

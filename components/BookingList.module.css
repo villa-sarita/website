@@ -97,6 +97,11 @@
   color: #6b4f12;
   border: 1px solid #ead9b8;
 }
+.source-event_inquiry {
+  background: rgba(184, 132, 207, 0.16);
+  color: #6a3e83;
+  border: 1px solid rgba(184, 132, 207, 0.4);
+}
 
 .paymentMethod {
   font-size: 0.75rem;

@@ -22,6 +22,7 @@ const STATUS_LABEL: Record<BookingStatus, string> = {
 const SOURCE_LABEL: Record<BookingSource, string> = {
   online: 'Wompi',
   manual: 'Manual',
+  event_inquiry: 'Evento',
 };
 
 const PAYMENT_LABEL: Record<PaymentMethod, string> = {
@@ -46,16 +47,19 @@ function parseLocal(iso: string): Date | null {
   return new Date(y, m - 1, d);
 }
 
-/** "9–19 jun" if same month, "9 jun – 4 jul" otherwise. */
+/** "9–19 jun" if same month, "9 jun – 4 jul" otherwise. Single-day events
+ *  collapse to just "12 jul" (no en-dash with the same number twice). */
 function formatDateRange(checkIn: string, checkOut: string): string {
   const a = parseLocal(checkIn);
   const b = parseLocal(checkOut);
   if (!a || !b) return '—';
   const monthA = a.toLocaleDateString('es-CO', { month: 'short' }).replace('.', '');
   const monthB = b.toLocaleDateString('es-CO', { month: 'short' }).replace('.', '');
-  if (a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth()) {
-    return `${a.getDate()}–${b.getDate()} ${monthA}`;
-  }
+  const sameYear = a.getFullYear() === b.getFullYear();
+  const sameMonth = sameYear && a.getMonth() === b.getMonth();
+  const sameDay = sameMonth && a.getDate() === b.getDate();
+  if (sameDay) return `${a.getDate()} ${monthA}`;
+  if (sameMonth) return `${a.getDate()}–${b.getDate()} ${monthA}`;
   return `${a.getDate()} ${monthA} – ${b.getDate()} ${monthB}`;
 }
 
@@ -154,6 +158,7 @@ function BookingRow({
 }) {
   const canCancel = booking.status !== 'cancelled' && booking.status !== 'failed';
   const source: BookingSource = booking.source ?? 'online';
+  const isEvent = source === 'event_inquiry';
   const dateRange = formatDateRange(booking.checkIn, booking.checkOut);
   const balance = booking.totalCop - booking.depositCop;
   const waLink = buildWhatsAppLink(booking.guestPhone);
@@ -172,13 +177,15 @@ function BookingRow({
         <span className={`${styles.sourcePill} ${styles[`source-${source}`]}`}>
           {SOURCE_LABEL[source]}
         </span>
-        {booking.paymentMethod && (
+        {!isEvent && booking.paymentMethod && (
           <span className={styles.paymentMethod}>{PAYMENT_LABEL[booking.paymentMethod]}</span>
         )}
         <span className={styles.cabin}>{booking.cabana}</span>
         <span className={styles.dates}>{dateRange}</span>
         <span className={styles.guest}>{booking.guestName}</span>
-        <span className={styles.total}>{formatCop(booking.totalCop)}</span>
+        <span className={styles.total}>
+          {isEvent ? 'Por cotizar' : formatCop(booking.totalCop)}
+        </span>
         <span className={styles.rowActions}>
           <span className={styles.caret}>{expanded ? '▾' : '▸'}</span>
           {canCancel && (
@@ -209,12 +216,29 @@ function BookingRow({
       {expanded && (
         <div className={styles.expand}>
           <dl className={styles.detailGrid}>
-            <dt>Llegada</dt>
-            <dd>{formatDateLong(booking.checkIn)}</dd>
-            <dt>Salida</dt>
-            <dd>{formatDateLong(booking.checkOut)}</dd>
-            <dt>Huéspedes</dt>
-            <dd>{booking.guests || '—'}</dd>
+            {isEvent ? (
+              <>
+                <dt>Fecha del evento</dt>
+                <dd>{formatDateLong(booking.checkIn)}</dd>
+                {booking.eventTime && (
+                  <>
+                    <dt>Hora</dt>
+                    <dd>{booking.eventTime}</dd>
+                  </>
+                )}
+                <dt>Invitados</dt>
+                <dd>{booking.guests || '—'}</dd>
+              </>
+            ) : (
+              <>
+                <dt>Llegada</dt>
+                <dd>{formatDateLong(booking.checkIn)}</dd>
+                <dt>Salida</dt>
+                <dd>{formatDateLong(booking.checkOut)}</dd>
+                <dt>Huéspedes</dt>
+                <dd>{booking.guests || '—'}</dd>
+              </>
+            )}
             <dt>Teléfono</dt>
             <dd>
               {booking.guestPhone ? (
@@ -225,12 +249,24 @@ function BookingRow({
             </dd>
             <dt>Correo</dt>
             <dd>{booking.guestEmail || '—'}</dd>
-            <dt>Total estadía</dt>
-            <dd>{formatCop(booking.totalCop)}</dd>
-            <dt>Anticipo</dt>
-            <dd>{formatCop(booking.depositCop)}</dd>
-            <dt>Saldo al llegar</dt>
-            <dd>{formatCop(balance)}</dd>
+            {!isEvent && (
+              <>
+                <dt>Total estadía</dt>
+                <dd>{formatCop(booking.totalCop)}</dd>
+                <dt>Anticipo</dt>
+                <dd>{formatCop(booking.depositCop)}</dd>
+                <dt>Saldo al llegar</dt>
+                <dd>{formatCop(balance)}</dd>
+              </>
+            )}
+            {isEvent && (
+              <>
+                <dt>Cotización</dt>
+                <dd>
+                  Por cotizar — responde por WhatsApp con el precio.
+                </dd>
+              </>
+            )}
             <dt>Referencia</dt>
             <dd className={styles.ref}>{booking.reference}</dd>
             {booking.transactionId && (

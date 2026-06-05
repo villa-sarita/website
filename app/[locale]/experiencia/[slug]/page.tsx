@@ -99,8 +99,14 @@ export default async function ExperienciaDetail({ params }: Props) {
             <p className={styles.tagline}>{tagline}</p>
             <p className={styles.description}>{description}</p>
             <div className={styles.ctas}>
-              <Link href={`/${locale}/cabanas`} className="btn btn-primary">
+              <Link
+                href={`/${locale}/reservar/evento?tipo=${slug}`}
+                className="btn btn-primary"
+              >
                 {dict.experience.detailCtaBook}
+              </Link>
+              <Link href={`/${locale}/cabanas`} className="btn btn-ghost">
+                {dict.experience.detailCtaCabin}
               </Link>
             </div>
           </Reveal>

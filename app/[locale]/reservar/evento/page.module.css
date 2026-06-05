@@ -1,0 +1,46 @@
+.page {
+  padding: clamp(3rem, 8vw, 6rem) 0 clamp(3rem, 6vw, 5rem);
+  background: var(--paper);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  font-weight: 400;
+  color: var(--leaf-dark);
+  margin: 0.4rem 0 0.6rem;
+  line-height: 1.05;
+}
+
+.subtitle {
+  font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+  color: var(--ink-soft);
+  max-width: 540px;
+  margin: 0 0 0.8rem;
+  line-height: 1.45;
+}
+
+.helper {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  max-width: 580px;
+  margin: 0 0 2rem;
+  line-height: 1.5;
+  padding: 0.7rem 0.95rem;
+  background: rgba(255, 229, 168, 0.45);
+  border-left: 3px solid var(--sun-deep);
+  border-radius: 0 8px 8px 0;
+}
+
+.whatsappAlt {
+  text-align: center;
+  margin: 1.6rem auto 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.whatsappAlt a {
+  color: var(--leaf-dark);
+  font-weight: 700;
+  text-decoration: underline;
+}
