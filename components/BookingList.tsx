@@ -83,7 +83,6 @@ function buildWhatsAppLink(phone: string | undefined): string | null {
 
 interface BookingListProps {
   bookings: BookingRecord[];
-  token: string;
   /** When true, render a small expand/collapse caret header so the whole
    *  group can hide (used for the Canceladas section). */
   collapsible?: boolean;
@@ -93,7 +92,6 @@ interface BookingListProps {
 
 export function BookingList({
   bookings,
-  token,
   collapsible = false,
   defaultCollapsed = false,
   emptyHint,
@@ -137,7 +135,6 @@ export function BookingList({
       {cancelTarget && (
         <CancelDialog
           booking={cancelTarget}
-          token={token}
           onClose={() => setCancelTarget(null)}
         />
       )}
@@ -339,11 +336,9 @@ function BookingRow({
 
 function CancelDialog({
   booking,
-  token,
   onClose,
 }: {
   booking: BookingRecord;
-  token: string;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -372,10 +367,7 @@ function CancelDialog({
     try {
       const res = await fetch('/api/admin/booking/cancel', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${token}`,
-        },
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ reference: booking.reference, reason: r }),
       });
       if (!res.ok) {

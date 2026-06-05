@@ -1,26 +1,21 @@
-import { timingSafeEqual } from 'node:crypto';
-
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 import { logAdminAction } from '@/lib/auditLog';
 import { cancelBooking, loadBooking } from '@/lib/bookingStore';
+import { SESSION_COOKIE, verifyPassword, verifySessionToken } from '@/lib/session';
 
 export const runtime = 'nodejs';
 
-function safeEqual(a: string, b: string): boolean {
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ab.length !== bb.length) return false;
-  return timingSafeEqual(ab, bb);
-}
-
-function authOk(request: Request): boolean {
-  const expected = process.env.ADMIN_TOKEN;
-  if (!expected) return false;
+async function authOk(request: Request): Promise<boolean> {
+  const cookieStore = await cookies();
+  const session = verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
+  if (session) return true;
   const header = request.headers.get('authorization') ?? '';
-  const token = header.startsWith('Bearer ') ? header.slice(7) : '';
-  if (!token) return false;
-  return safeEqual(token, expected);
+  if (header.startsWith('Bearer ')) {
+    return verifyPassword(header.slice(7));
+  }
+  return false;
 }
 
 interface CancelPayload {
@@ -29,7 +24,7 @@ interface CancelPayload {
 }
 
 export async function POST(request: Request) {
-  if (!authOk(request)) {
+  if (!(await authOk(request))) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 

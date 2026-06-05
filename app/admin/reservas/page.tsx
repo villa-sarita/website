@@ -1,10 +1,12 @@
-import { notFound } from 'next/navigation';
-import { timingSafeEqual } from 'node:crypto';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
+import { AdminLogoutButton } from '@/components/AdminLogoutButton';
 import { BookingList } from '@/components/BookingList';
 import { ManualBookingForm } from '@/components/ManualBookingForm';
 import { cabanas } from '@/lib/cabanas';
 import { listBookings, type BookingStatus } from '@/lib/bookingStore';
+import { SESSION_COOKIE, verifySessionToken } from '@/lib/session';
 import siteData from '@/content/site.json';
 
 import styles from './page.module.css';
@@ -12,27 +14,15 @@ import styles from './page.module.css';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-function safeEqual(a: string, b: string): boolean {
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ab.length !== bb.length) return false;
-  return timingSafeEqual(ab, bb);
-}
-
-interface PageProps {
-  searchParams: Promise<{ token?: string }>;
-}
-
-export default async function AdminReservasPage({ searchParams }: PageProps) {
-  const { token } = await searchParams;
-  const expected = process.env.ADMIN_TOKEN;
-  if (!expected || !token || !safeEqual(token, expected)) {
-    notFound();
+export default async function AdminReservasPage() {
+  const cookieStore = await cookies();
+  const session = verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
+  if (!session) {
+    redirect('/admin/login?next=/admin/reservas');
   }
 
   const allBookings = await listBookings();
 
-  // Counters across everything.
   const counts: Record<BookingStatus, number> = {
     pending: 0,
     paid: 0,
@@ -41,7 +31,6 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
   };
   for (const b of allBookings) counts[b.status] = (counts[b.status] ?? 0) + 1;
 
-  // Active = anything not cancelled or failed.
   const active = allBookings.filter(
     (b) => b.status !== 'cancelled' && b.status !== 'failed',
   );
@@ -66,7 +55,6 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       </header>
 
       <ManualBookingForm
-        token={token}
         cabanas={cabanas.map((c) => ({
           slug: c.slug,
           name: c.name,
@@ -78,33 +66,28 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       {upcoming.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Próximas</h2>
-          <BookingList bookings={upcoming} token={token} />
+          <BookingList bookings={upcoming} />
         </section>
       )}
 
       {undated.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Sin fechas (revisar)</h2>
-          <BookingList bookings={undated} token={token} />
+          <BookingList bookings={undated} />
         </section>
       )}
 
       {past.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Pasadas</h2>
-          <BookingList bookings={past} token={token} />
+          <BookingList bookings={past} />
         </section>
       )}
 
       {cancelled.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Canceladas</h2>
-          <BookingList
-            bookings={cancelled}
-            token={token}
-            collapsible
-            defaultCollapsed
-          />
+          <BookingList bookings={cancelled} collapsible defaultCollapsed />
         </section>
       )}
 
@@ -124,6 +107,8 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         >
           WhatsApp
         </a>
+        {' · '}
+        <AdminLogoutButton />
       </footer>
     </div>
   );

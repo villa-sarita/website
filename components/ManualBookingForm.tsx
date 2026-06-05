@@ -13,8 +13,6 @@ interface CabanaOption {
 
 interface ManualBookingFormProps {
   cabanas: CabanaOption[];
-  /** ADMIN_TOKEN — sent as Bearer header so the server can authorize the write. */
-  token: string;
 }
 
 type PaymentMethod = 'cash' | 'transfer' | 'other';
@@ -32,7 +30,7 @@ const nightsBetween = (a: string, b: string): number => {
   return Math.max(0, Math.round(ms / 86400000));
 };
 
-export function ManualBookingForm({ cabanas, token }: ManualBookingFormProps) {
+export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
   const [open, setOpen] = useState(false);
   const [cabanaSlug, setCabanaSlug] = useState(cabanas[0]?.slug ?? '');
   const [checkIn, setCheckIn] = useState('');
@@ -86,10 +84,7 @@ export function ManualBookingForm({ cabanas, token }: ManualBookingFormProps) {
     try {
       const res = await fetch('/api/admin/booking', {
         method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: `Bearer ${token}`,
-        },
+        headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           cabanaSlug,
           checkIn,
