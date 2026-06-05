@@ -15,7 +15,7 @@
     "cabanaDetailDescription": "{tagline}. Cabaña en Villa Sarita, ecolodge premium en Tumaco (Pacífico colombiano). Reserva directa, sin intermediarios.",
     "experiencia": {
       "title": "Experiencias · Cumpleaños, matrimonios y picnics en Villa Sarita",
-      "description": "Cada celebración preparada con detalle en un entorno natural y privado. Cumpleaños, matrimonios, quinceañeros, picnics y noches en pareja en Villa Sarita, Tumaco."
+      "description": "Cada celebración preparada con detalle en un entorno natural y privado. Cumpleaños, matrimonios, quinceañeras, picnics y noches en pareja en Villa Sarita, Tumaco."
     },
     "experienciaDetailDescription": "{tagline}. Experiencia preparada en Villa Sarita, ecolodge premium en Tumaco, Pacífico colombiano.",
     "ubicacion": {
@@ -55,7 +55,7 @@
     "cabanasBlurb": "Desde un refugio íntimo para dos hasta un apartaestudio independiente para seis. Todas con su propio carácter, todas en el mismo entorno natural.",
     "experienceLabel": "las experiencias en Villa Sarita",
     "experienceTitle": "Cumpleaños, matrimonios, picnics y más",
-    "experienceBlurb": "Cada celebración se prepara con detalle, en un entorno natural y privado. Cumpleaños, matrimonios, picnics, quinceañeros y más. Mira las experiencias que hemos creado y elige la tuya.",
+    "experienceBlurb": "Cada celebración se prepara con detalle, en un entorno natural y privado. Cumpleaños, matrimonios, picnics, quinceañeras y más. Mira las experiencias que hemos creado y elige la tuya.",
     "experienceCta": "Ver las experiencias",
     "experienceBookCta": "Reservar un evento",
     "locationLabel": "dónde estamos",
@@ -145,7 +145,7 @@
   "experience": {
     "label": "las experiencias",
     "title": "Las experiencias en Villa Sarita",
-    "blurb": "Cada experiencia se prepara con detalle, en un entorno natural y privado. Cumpleaños, matrimonios, picnics, quinceañeros y más. Elige la que más te llame.",
+    "blurb": "Cada experiencia se prepara con detalle, en un entorno natural y privado. Cumpleaños, matrimonios, picnics, quinceañeras y más. Elige la que más te llame.",
     "cardLabel": "experiencia",
     "cardCta": "Ver experiencia",
     "detailLabel": "experiencia",
