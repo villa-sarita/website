@@ -22,7 +22,10 @@ export const SESSION_COOKIE = 'vs_admin_session';
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 function getSecret(): string {
-  const s = process.env.ADMIN_TOKEN;
+  // Trim because Vercel's env editor occasionally swallows a trailing
+  // newline or space on paste, and a byte-mismatch would silently break
+  // password verification AND invalidate every issued session.
+  const s = process.env.ADMIN_TOKEN?.trim();
   if (!s) throw new Error('ADMIN_TOKEN is not set');
   return s;
 }
@@ -85,12 +88,14 @@ export function verifySessionToken(token: string | undefined): Session | null {
   return { id, expiresAt };
 }
 
-/** Constant-time equality check of a typed password against ADMIN_TOKEN. */
+/** Constant-time equality check of a typed password against ADMIN_TOKEN.
+ *  Both the typed input and the env-var value are trimmed so that an
+ *  accidental newline/space on either side can't cause a silent mismatch. */
 export function verifyPassword(input: string): boolean {
-  if (!input) return false;
-  const expected = process.env.ADMIN_TOKEN;
-  if (!expected) return false;
-  const a = Buffer.from(input);
+  const typed = (input ?? '').trim();
+  const expected = (process.env.ADMIN_TOKEN ?? '').trim();
+  if (!typed || !expected) return false;
+  const a = Buffer.from(typed);
   const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
