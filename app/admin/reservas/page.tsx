@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 
 import { AdminLogoutButton } from '@/components/AdminLogoutButton';
 import { BookingList } from '@/components/BookingList';
+import { ChangePasswordButton } from '@/components/ChangePasswordButton';
 import { ManualBookingForm } from '@/components/ManualBookingForm';
 import { cabanas } from '@/lib/cabanas';
 import { listBookings, type BookingStatus } from '@/lib/bookingStore';
@@ -107,6 +108,8 @@ export default async function AdminReservasPage() {
         >
           WhatsApp
         </a>
+        {' · '}
+        <ChangePasswordButton />
         {' · '}
         <AdminLogoutButton />
       </footer>

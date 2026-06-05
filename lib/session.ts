@@ -88,15 +88,8 @@ export function verifySessionToken(token: string | undefined): Session | null {
   return { id, expiresAt };
 }
 
-/** Constant-time equality check of a typed password against ADMIN_TOKEN.
- *  Both the typed input and the env-var value are trimmed so that an
- *  accidental newline/space on either side can't cause a silent mismatch. */
-export function verifyPassword(input: string): boolean {
-  const typed = (input ?? '').trim();
-  const expected = (process.env.ADMIN_TOKEN ?? '').trim();
-  if (!typed || !expected) return false;
-  const a = Buffer.from(typed);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-}
+/** Constant-time equality check of a typed password.
+ *  Delegates to lib/adminPassword which reads from Upstash first (the
+ *  source of truth once the host has set a password in the UI) and
+ *  falls back to the ADMIN_TOKEN env var for initial setup / recovery. */
+export { verifyPassword } from './adminPassword';

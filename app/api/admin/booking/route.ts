@@ -19,7 +19,7 @@ async function authOk(request: Request): Promise<boolean> {
   if (session) return true;
   const header = request.headers.get('authorization') ?? '';
   if (header.startsWith('Bearer ')) {
-    return verifyPassword(header.slice(7));
+    return await verifyPassword(header.slice(7));
   }
   return false;
 }

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
   }
 
   const password = (body.password ?? '').trim();
-  if (!verifyPassword(password)) {
+  if (!(await verifyPassword(password))) {
     // Small constant delay so the response shape can't be timing-discriminated
     // beyond what verifyPassword already does.
     await new Promise((r) => setTimeout(r, 250));
