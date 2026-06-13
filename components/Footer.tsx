@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
+import { formatTime12h } from '@/lib/format';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import siteData from '@/content/site.json';
 
@@ -118,7 +119,11 @@ export function Footer({ locale, dict }: FooterProps) {
               </span>
             </li>
             <li>
-              <span className={styles.colMuted}>{dict.footer.checkInOut}</span>
+              <span className={styles.colMuted}>
+                {dict.booking.checkIn} {formatTime12h(siteData.checkIn, locale)}
+                {' · '}
+                {dict.booking.checkOut} {formatTime12h(siteData.checkOut, locale)}
+              </span>
             </li>
           </ul>
 
