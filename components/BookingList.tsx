@@ -109,10 +109,48 @@ export function BookingList({
   defaultCollapsed = false,
   emptyHint,
 }: BookingListProps) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [groupOpen, setGroupOpen] = useState(!defaultCollapsed);
   const [cancelTarget, setCancelTarget] = useState<BookingRecord | null>(null);
   const [editTarget, setEditTarget] = useState<BookingRecord | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<BookingRecord | null>(null);
+  const [restoring, setRestoring] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const onRestore = async (b: BookingRecord) => {
+    setRestoring(b.reference);
+    setActionError(null);
+    try {
+      const res = await fetch('/api/admin/booking/restore', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: b.reference }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 409) {
+          const conflicts =
+            (data.conflicts as Array<{ checkIn: string; checkOut: string; guestName: string }>) ?? [];
+          const lines = conflicts.map(
+            (c) => `• ${c.guestName} — ${c.checkIn} a ${c.checkOut}`,
+          );
+          setActionError(
+            `No se puede restaurar: las fechas ya están tomadas por otra reserva:\n${lines.join('\n')}`,
+          );
+        } else {
+          setActionError(data.error ?? 'No se pudo restaurar la reserva.');
+        }
+        return;
+      }
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setActionError('Error de red. Intenta de nuevo.');
+    } finally {
+      setRestoring(null);
+    }
+  };
 
   const editCabin =
     editTarget && editTarget.cabanaSlug && cabins
@@ -144,14 +182,29 @@ export function BookingList({
               booking={b}
               expanded={expanded === b.reference}
               canEdit={!!(b.cabanaSlug && cabins && cabins[b.cabanaSlug])}
+              restoring={restoring === b.reference}
               onToggle={() =>
                 setExpanded((cur) => (cur === b.reference ? null : b.reference))
               }
               onAskCancel={() => setCancelTarget(b)}
               onAskEdit={() => setEditTarget(b)}
+              onAskRestore={() => onRestore(b)}
+              onAskDelete={() => setDeleteTarget(b)}
             />
           ))}
         </ul>
+      )}
+      {actionError && (
+        <div className={styles.actionError} role="alert">
+          <span>{actionError}</span>
+          <button
+            type="button"
+            onClick={() => setActionError(null)}
+            aria-label="Cerrar"
+          >
+            ✕
+          </button>
+        </div>
       )}
       {cancelTarget && (
         <CancelDialog
@@ -166,6 +219,12 @@ export function BookingList({
           onClose={() => setEditTarget(null)}
         />
       )}
+      {deleteTarget && (
+        <DeleteDialog
+          booking={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+        />
+      )}
     </>
   );
 }
@@ -174,19 +233,27 @@ function BookingRow({
   booking,
   expanded,
   canEdit,
+  restoring,
   onToggle,
   onAskCancel,
   onAskEdit,
+  onAskRestore,
+  onAskDelete,
 }: {
   booking: BookingRecord;
   expanded: boolean;
   canEdit: boolean;
+  restoring: boolean;
   onToggle: () => void;
   onAskCancel: () => void;
   onAskEdit: () => void;
+  onAskRestore: () => void;
+  onAskDelete: () => void;
 }) {
   const canCancel = booking.status !== 'cancelled' && booking.status !== 'failed';
   const showEdit = canEdit && canCancel && (booking.source ?? 'online') !== 'event_inquiry';
+  const canRestore = booking.status === 'cancelled';
+  const canDelete = booking.status === 'cancelled' || booking.status === 'failed';
   const source: BookingSource = booking.source ?? 'online';
   const isEvent = source === 'event_inquiry';
   const dateRange = formatDateRange(booking.checkIn, booking.checkOut);
@@ -381,6 +448,25 @@ function BookingRow({
                 Cancelar reserva
               </button>
             )}
+            {canRestore && (
+              <button
+                type="button"
+                onClick={onAskRestore}
+                disabled={restoring}
+                className={`${styles.actionBtn} ${styles.restoreBtn}`}
+              >
+                {restoring ? 'Restaurando…' : 'Restaurar reserva'}
+              </button>
+            )}
+            {canDelete && (
+              <button
+                type="button"
+                onClick={onAskDelete}
+                className={`${styles.actionBtn} ${styles.deleteBtn}`}
+              >
+                Eliminar permanentemente
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -496,6 +582,93 @@ function CancelDialog({
             disabled={submitting}
           >
             {submitting ? 'Cancelando…' : 'Cancelar reserva'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteDialog({
+  booking,
+  onClose,
+}: {
+  booking: BookingRecord;
+  onClose: () => void;
+}) {
+  const router = useRouter();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [onClose]);
+
+  const submit = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/booking/delete', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ reference: booking.reference }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error ?? 'No se pudo eliminar.');
+        setSubmitting(false);
+        return;
+      }
+      onClose();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setError('Error de red. Intenta de nuevo.');
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className={styles.backdrop}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className={styles.dialog} role="dialog" aria-modal="true">
+        <h3 className={styles.dialogTitle}>Eliminar para siempre</h3>
+        <p className={styles.dialogBody}>
+          Vas a borrar la reserva de <strong>{booking.guestName}</strong>
+          {booking.cabana ? ` (${booking.cabana})` : ''}.
+        </p>
+        <div className={styles.warning}>
+          <strong>Esta acción no se puede deshacer.</strong> El registro
+          desaparece de la lista. Úsalo sólo para limpiar reservas viejas que
+          ya no quieras ver.
+        </div>
+
+        {error && <div className={styles.dialogError}>{error}</div>}
+
+        <div className={styles.dialogActions}>
+          <button
+            type="button"
+            onClick={onClose}
+            className={styles.dialogCancel}
+            disabled={submitting}
+          >
+            Volver
+          </button>
+          <button
+            type="button"
+            onClick={submit}
+            className={styles.dialogConfirm}
+            disabled={submitting}
+          >
+            {submitting ? 'Eliminando…' : 'Eliminar para siempre'}
           </button>
         </div>
       </div>

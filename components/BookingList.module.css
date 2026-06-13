@@ -289,6 +289,57 @@
   background: #f0bcb0;
 }
 
+.restoreBtn {
+  background: #d9eccc;
+  color: #2e4a2c;
+  border-color: #b3d49c;
+}
+
+.restoreBtn:hover {
+  background: #c5deaf;
+}
+
+.restoreBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.deleteBtn {
+  background: transparent;
+  color: #7a2a18;
+  border-color: #7a2a18;
+}
+
+.deleteBtn:hover {
+  background: #7a2a18;
+  color: white;
+}
+
+.actionError {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.8rem;
+  background: #f7d5cd;
+  border: 1px solid #ea9886;
+  color: #7a2a18;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  white-space: pre-line;
+}
+
+.actionError button {
+  background: transparent;
+  border: 0;
+  color: #7a2a18;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+  align-self: flex-start;
+}
+
 /* ============================================================
    Group toggle for the Canceladas section
    ============================================================ */

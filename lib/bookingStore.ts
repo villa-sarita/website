@@ -44,6 +44,9 @@ export type BookingRecord = Omit<HostNotificationParams, 'transactionId'> & {
   cancelledAt?: string;
   cancelledBy?: string;
   cancellationReason?: string;
+  /** The booking's status immediately before cancelBooking() — used by
+   *  restoreBooking() to put the booking back in the right bucket. */
+  previousStatus?: BookingStatus;
   /** Event-inquiry fields — set when source === 'event_inquiry'. */
   eventType?: string; // slug from content/experiencias.json or 'otro'
   eventTime?: string; // free-form, e.g. "tarde", "18:00"
@@ -244,6 +247,7 @@ export async function cancelBooking(
     cancelledAt: now,
     cancelledBy: actor,
     cancellationReason: reason,
+    previousStatus: existing.status,
   };
   const redis = getRedis();
   if (redis) {
@@ -254,6 +258,63 @@ export async function cancelBooking(
     writeFs(state);
   }
   return updated;
+}
+
+/**
+ * Undo a cancellation — flip status back to whatever it was before
+ * cancelBooking() flipped it (paid, pending, etc.), clear the cancellation
+ * metadata. Returns null if the booking isn't currently cancelled, so the
+ * caller can return a clean 400.
+ */
+export async function restoreBooking(
+  reference: string,
+): Promise<BookingRecord | null> {
+  const existing = await loadBooking(reference);
+  if (!existing) return null;
+  if (existing.status !== 'cancelled') return null;
+  const now = new Date().toISOString();
+  const restoreTo: BookingStatus = existing.previousStatus ?? 'paid';
+  const updated: BookingRecord = {
+    ...existing,
+    status: restoreTo,
+    updatedAt: now,
+  };
+  // Wipe cancellation metadata so the row goes back to looking active.
+  delete updated.cancelledAt;
+  delete updated.cancelledBy;
+  delete updated.cancellationReason;
+  delete updated.previousStatus;
+  const redis = getRedis();
+  if (redis) {
+    await redis.set(KEY_BOOKING(reference), JSON.stringify(updated));
+  } else {
+    const state = readFs();
+    state.bookings[reference] = updated;
+    writeFs(state);
+  }
+  return updated;
+}
+
+/**
+ * Hard-delete a booking — removes both the booking record AND its entry in
+ * the bookings:index sorted set so it stops showing up in listBookings().
+ * Irreversible. Only used by the admin Eliminar action on cancelled/failed
+ * bookings to keep the list tidy.
+ */
+export async function deleteBooking(reference: string): Promise<boolean> {
+  const redis = getRedis();
+  if (redis) {
+    const [del] = await Promise.all([
+      redis.del(KEY_BOOKING(reference)),
+      redis.zrem(KEY_REF_INDEX, reference),
+    ]);
+    return del > 0;
+  }
+  const state = readFs();
+  if (!(reference in state.bookings)) return false;
+  delete state.bookings[reference];
+  writeFs(state);
+  return true;
 }
 
 export async function hasProcessedTransaction(

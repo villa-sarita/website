@@ -16,7 +16,9 @@ export type AuditAction =
   | 'booking_cancelled'
   | 'booking_manual_created'
   | 'booking_edited'
-  | 'booking_refunded';
+  | 'booking_refunded'
+  | 'booking_restored'
+  | 'booking_deleted';
 
 export interface AuditEntry {
   timestamp: string; // ISO
