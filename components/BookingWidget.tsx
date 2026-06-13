@@ -57,20 +57,12 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
     };
   }, [cabana.slug]);
 
-  // Each blocked range covers the NIGHTS from checkIn (inclusive) to
-  // checkOut (exclusive) — the standard hospitality convention. Same-day
-  // turnover is allowed so we don't include the checkout day.
+  // Block the full check-in → check-out span (both ends inclusive). The
+  // auntie's mental model is "those dates are taken"; she doesn't run
+  // same-day turnover.
   const disabledMatchers = useMemo<Matcher[]>(
     () =>
-      blocked.map((b) => {
-        const from = parseDate(b.checkIn);
-        const to = parseDate(b.checkOut);
-        // react-day-picker { from, to } is INCLUSIVE on both ends.
-        // Subtract a day from `to` so the checkout day stays selectable.
-        const checkoutDay = new Date(to);
-        checkoutDay.setDate(checkoutDay.getDate() - 1);
-        return { from, to: checkoutDay };
-      }),
+      blocked.map((b) => ({ from: parseDate(b.checkIn), to: parseDate(b.checkOut) })),
     [blocked],
   );
 

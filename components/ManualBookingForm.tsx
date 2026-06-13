@@ -35,11 +35,11 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
   const [cabanaSlug, setCabanaSlug] = useState(cabanas[0]?.slug ?? '');
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
-  const [guests, setGuests] = useState(2);
+  const [guests, setGuests] = useState('2');
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
-  const [paidAmount, setPaidAmount] = useState(0); // depositCop
+  const [paidAmount, setPaidAmount] = useState(''); // depositCop
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,15 +48,17 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
   const selectedCabana = cabanas.find((c) => c.slug === cabanaSlug);
   const nights = nightsBetween(checkIn, checkOut);
   const computedTotal = selectedCabana ? selectedCabana.rate * nights : 0;
+  const guestsNum = Number(guests) || 0;
+  const paidAmountNum = Number(paidAmount) || 0;
 
   const reset = () => {
     setCheckIn('');
     setCheckOut('');
-    setGuests(2);
+    setGuests('2');
     setGuestName('');
     setGuestPhone('');
     setPaymentMethod('cash');
-    setPaidAmount(0);
+    setPaidAmount('');
     setNotes('');
     setError(null);
   };
@@ -72,7 +74,7 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
       setError('Las fechas no son válidas.');
       return;
     }
-    if (guests < 1 || guests > selectedCabana.capacity) {
+    if (guestsNum < 1 || guestsNum > selectedCabana.capacity) {
       setError(`Huéspedes debe estar entre 1 y ${selectedCabana.capacity}.`);
       return;
     }
@@ -89,11 +91,11 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
           cabanaSlug,
           checkIn,
           checkOut,
-          guests,
+          guests: guestsNum,
           guestName: guestName.trim(),
           guestPhone: guestPhone.trim() || undefined,
           totalCop: computedTotal,
-          depositCop: paidAmount || 0,
+          depositCop: paidAmountNum,
           paymentMethod,
           notes: notes.trim() || undefined,
         }),
@@ -199,10 +201,11 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
           <span>Huéspedes</span>
           <input
             type="number"
+            inputMode="numeric"
             min={1}
             max={selectedCabana?.capacity ?? 6}
             value={guests}
-            onChange={(e) => setGuests(Number(e.target.value))}
+            onChange={(e) => setGuests(e.target.value)}
             required
           />
         </label>
@@ -241,13 +244,14 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
         </label>
 
         <label className={styles.field}>
-          <span>Pagado hasta ahora</span>
+          <span>Abono</span>
           <input
             type="number"
+            inputMode="numeric"
             min={0}
             step={1000}
             value={paidAmount}
-            onChange={(e) => setPaidAmount(Number(e.target.value))}
+            onChange={(e) => setPaidAmount(e.target.value)}
             placeholder="0"
           />
         </label>
@@ -271,9 +275,9 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
               {formatCop(selectedCabana.rate)} / noche
             </span>
             <strong>Total: {formatCop(computedTotal)}</strong>
-            {paidAmount > 0 && paidAmount < computedTotal && (
+            {paidAmountNum > 0 && paidAmountNum < computedTotal && (
               <span className={styles.balance}>
-                Saldo al llegar: {formatCop(computedTotal - paidAmount)}
+                Saldo al llegar: {formatCop(computedTotal - paidAmountNum)}
               </span>
             )}
           </>
