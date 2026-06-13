@@ -15,9 +15,9 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background-image: url('/experiencias/exteriores/8.jpg');
+  background-image: url('/hero-villa-sarita.jpg');
   background-size: cover;
-  background-position: center 35%;
+  background-position: center 55%;
   background-repeat: no-repeat;
 }
 
