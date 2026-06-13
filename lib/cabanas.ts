@@ -53,3 +53,9 @@ export function groupByType(list: Cabana[] = cabanas) {
 export function minRate(): number {
   return Math.min(...cabanas.map((c) => c.nightlyRateCop));
 }
+
+/** Bijao (couple cabin) is the only cabin that doesn't accept extra people —
+ *  it physically only fits two. The other cabins charge per extra guest. */
+export function allowsExtraGuests(c: Cabana): boolean {
+  return c.type !== 'couple';
+}

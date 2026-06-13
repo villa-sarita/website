@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 
+import { ANIMAL_NIGHTLY_COP, EXTRA_PERSON_NIGHTLY_COP } from '@/lib/price';
+
 import styles from './ManualBookingForm.module.css';
 
 interface CabanaOption {
@@ -9,6 +11,7 @@ interface CabanaOption {
   name: string;
   rate: number;
   capacity: number;
+  allowsExtras: boolean;
 }
 
 interface ManualBookingFormProps {
@@ -36,6 +39,8 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
   const [checkIn, setCheckIn] = useState('');
   const [checkOut, setCheckOut] = useState('');
   const [guests, setGuests] = useState('2');
+  const [extras, setExtras] = useState('0');
+  const [animals, setAnimals] = useState('0');
   const [guestName, setGuestName] = useState('');
   const [guestPhone, setGuestPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
@@ -47,14 +52,21 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
 
   const selectedCabana = cabanas.find((c) => c.slug === cabanaSlug);
   const nights = nightsBetween(checkIn, checkOut);
-  const computedTotal = selectedCabana ? selectedCabana.rate * nights : 0;
   const guestsNum = Number(guests) || 0;
+  const extrasNum = selectedCabana?.allowsExtras ? Number(extras) || 0 : 0;
+  const animalsNum = Number(animals) || 0;
   const paidAmountNum = Number(paidAmount) || 0;
+  const baseCost = selectedCabana ? selectedCabana.rate * nights : 0;
+  const extrasCost = extrasNum * EXTRA_PERSON_NIGHTLY_COP * nights;
+  const animalsCost = animalsNum * ANIMAL_NIGHTLY_COP * nights;
+  const computedTotal = baseCost + extrasCost + animalsCost;
 
   const reset = () => {
     setCheckIn('');
     setCheckOut('');
     setGuests('2');
+    setExtras('0');
+    setAnimals('0');
     setGuestName('');
     setGuestPhone('');
     setPaymentMethod('cash');
@@ -78,6 +90,18 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
       setError(`Huéspedes debe estar entre 1 y ${selectedCabana.capacity}.`);
       return;
     }
+    if (extrasNum < 0) {
+      setError('Personas extra no puede ser negativo.');
+      return;
+    }
+    if (animalsNum < 0) {
+      setError('Animales no puede ser negativo.');
+      return;
+    }
+    if (extrasNum > 0 && !selectedCabana.allowsExtras) {
+      setError('Esta cabaña no permite personas adicionales.');
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -92,6 +116,8 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
           checkIn,
           checkOut,
           guests: guestsNum,
+          extras: extrasNum,
+          animals: animalsNum,
           guestName: guestName.trim(),
           guestPhone: guestPhone.trim() || undefined,
           totalCop: computedTotal,
@@ -210,6 +236,30 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
           />
         </label>
 
+        {selectedCabana?.allowsExtras && (
+          <label className={styles.field}>
+            <span>Personas extra (+{formatCop(EXTRA_PERSON_NIGHTLY_COP)}/noche)</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={0}
+              value={extras}
+              onChange={(e) => setExtras(e.target.value)}
+            />
+          </label>
+        )}
+
+        <label className={styles.field}>
+          <span>Animales (+{formatCop(ANIMAL_NIGHTLY_COP)}/noche)</span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            value={animals}
+            onChange={(e) => setAnimals(e.target.value)}
+          />
+        </label>
+
         <label className={`${styles.field} ${styles.wide}`}>
           <span>Nombre del huésped</span>
           <input
@@ -274,6 +324,18 @@ export function ManualBookingForm({ cabanas }: ManualBookingFormProps) {
               {nights} {nights === 1 ? 'noche' : 'noches'} ·{' '}
               {formatCop(selectedCabana.rate)} / noche
             </span>
+            {extrasNum > 0 && (
+              <span className={styles.balance}>
+                + {extrasNum} extra × {formatCop(EXTRA_PERSON_NIGHTLY_COP)} × {nights} ={' '}
+                {formatCop(extrasCost)}
+              </span>
+            )}
+            {animalsNum > 0 && (
+              <span className={styles.balance}>
+                + {animalsNum} animal{animalsNum === 1 ? '' : 'es'} × {formatCop(ANIMAL_NIGHTLY_COP)} × {nights} ={' '}
+                {formatCop(animalsCost)}
+              </span>
+            )}
             <strong>Total: {formatCop(computedTotal)}</strong>
             {paidAmountNum > 0 && paidAmountNum < computedTotal && (
               <span className={styles.balance}>

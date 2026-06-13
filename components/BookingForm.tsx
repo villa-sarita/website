@@ -7,9 +7,14 @@ import type { DateRange } from 'react-day-picker';
 
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
 import type { Cabana } from '@/lib/cabanas';
-import { getCabanaName } from '@/lib/cabanas';
+import { allowsExtraGuests, getCabanaName } from '@/lib/cabanas';
 import { diffInNights, formatDate, toISODate } from '@/lib/format';
-import { calculateBreakdown, formatCurrency } from '@/lib/price';
+import {
+  ANIMAL_NIGHTLY_COP,
+  EXTRA_PERSON_NIGHTLY_COP,
+  calculateBreakdown,
+  formatCurrency,
+} from '@/lib/price';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import siteData from '@/content/site.json';
 
@@ -25,6 +30,8 @@ interface BookingFormProps {
   initialFrom?: Date;
   initialTo?: Date;
   initialGuests?: number;
+  initialExtras?: number;
+  initialAnimals?: number;
 }
 
 export function BookingForm({
@@ -34,6 +41,8 @@ export function BookingForm({
   initialFrom,
   initialTo,
   initialGuests,
+  initialExtras,
+  initialAnimals,
 }: BookingFormProps) {
   const [range, setRange] = useState<DateRange | undefined>(
     initialFrom && initialTo ? { from: initialFrom, to: initialTo } : undefined,
@@ -41,7 +50,11 @@ export function BookingForm({
   const [guests, setGuests] = useState(
     Math.min(initialGuests ?? 2, cabana.capacity),
   );
+  const [extras, setExtras] = useState(Math.max(0, initialExtras ?? 0));
+  const [animals, setAnimals] = useState(Math.max(0, initialAnimals ?? 0));
   const [eventOn, setEventOn] = useState(false);
+
+  const canHaveExtras = allowsExtraGuests(cabana);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState<string | undefined>('+57');
@@ -56,8 +69,12 @@ export function BookingForm({
     [range],
   );
   const breakdown = useMemo(
-    () => calculateBreakdown(cabana.nightlyRateCop, nights),
-    [cabana.nightlyRateCop, nights],
+    () =>
+      calculateBreakdown(cabana.nightlyRateCop, nights, {
+        extras: canHaveExtras ? extras : 0,
+        animals,
+      }),
+    [cabana.nightlyRateCop, nights, canHaveExtras, extras, animals],
   );
 
   const hasBasics = nights > 0 && name.trim() && phone && !submitting;
@@ -89,6 +106,8 @@ export function BookingForm({
       checkIn: toISODate(range.from),
       checkOut: toISODate(range.to),
       guests,
+      extras: canHaveExtras ? extras : 0,
+      animals,
       nights,
       totalCop: breakdown.subtotal,
       depositCop: breakdown.deposit,
@@ -158,6 +177,28 @@ export function BookingForm({
             addLabel={dict.booking.addGuest}
             removeLabel={dict.booking.removeGuest}
             maxLabel={dict.booking.maxGuestsReached}
+          />
+          {canHaveExtras && (
+            <GuestCounter
+              value={extras}
+              onChange={setExtras}
+              min={0}
+              max={99}
+              label={`${dict.booking.extras} (+${formatCurrency(EXTRA_PERSON_NIGHTLY_COP, locale)} / ${dict.cabanas.perNight})`}
+              addLabel={dict.booking.addExtra}
+              removeLabel={dict.booking.removeExtra}
+              maxLabel=""
+            />
+          )}
+          <GuestCounter
+            value={animals}
+            onChange={setAnimals}
+            min={0}
+            max={99}
+            label={`${dict.booking.animals} (+${formatCurrency(ANIMAL_NIGHTLY_COP, locale)} / ${dict.cabanas.perNight})`}
+            addLabel={dict.booking.addAnimal}
+            removeLabel={dict.booking.removeAnimal}
+            maxLabel=""
           />
         </section>
 
@@ -260,8 +301,24 @@ export function BookingForm({
             <span>
               {formatCurrency(cabana.nightlyRateCop, locale)} × {nights} {dict.booking.nights}
             </span>
-            <span>{formatCurrency(breakdown.subtotal, locale)}</span>
+            <span>{formatCurrency(breakdown.base, locale)}</span>
           </div>
+          {breakdown.extras > 0 && (
+            <div className={styles.summaryRow}>
+              <span>
+                {breakdown.extras} × {dict.booking.extraLine}
+              </span>
+              <span>{formatCurrency(breakdown.extrasCost, locale)}</span>
+            </div>
+          )}
+          {breakdown.animals > 0 && (
+            <div className={styles.summaryRow}>
+              <span>
+                {breakdown.animals} × {dict.booking.animalLine}
+              </span>
+              <span>{formatCurrency(breakdown.animalsCost, locale)}</span>
+            </div>
+          )}
           {eventOn && (
             <div className={`${styles.summaryRow} ${styles.summaryMuted}`}>
               <span>{dict.booking.eventExtra}</span>

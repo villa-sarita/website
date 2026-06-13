@@ -11,7 +11,13 @@ import styles from './page.module.css';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
-  searchParams: Promise<{ from?: string; to?: string; guests?: string }>;
+  searchParams: Promise<{
+    from?: string;
+    to?: string;
+    guests?: string;
+    extras?: string;
+    animals?: string;
+  }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -42,6 +48,8 @@ export default async function ReservarPage({ params, searchParams }: Props) {
   const initialFrom = parseDate(search.from);
   const initialTo = parseDate(search.to);
   const initialGuests = search.guests ? Number.parseInt(search.guests, 10) : undefined;
+  const initialExtras = search.extras ? Number.parseInt(search.extras, 10) : undefined;
+  const initialAnimals = search.animals ? Number.parseInt(search.animals, 10) : undefined;
 
   return (
     <section className={styles.page}>
@@ -61,6 +69,8 @@ export default async function ReservarPage({ params, searchParams }: Props) {
             initialFrom={initialFrom}
             initialTo={initialTo}
             initialGuests={initialGuests}
+            initialExtras={initialExtras}
+            initialAnimals={initialAnimals}
           />
         </div>
       </div>

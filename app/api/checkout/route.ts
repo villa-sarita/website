@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { findConflicts } from '@/lib/availability';
 import { saveBooking } from '@/lib/bookingStore';
-import { getCabana, getCabanaName } from '@/lib/cabanas';
+import { allowsExtraGuests, getCabana, getCabanaName } from '@/lib/cabanas';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { calculateBreakdown } from '@/lib/price';
 import { buildCheckoutUrl, buildReference } from '@/lib/wompi';
@@ -15,6 +15,8 @@ interface CheckoutPayload {
   checkIn: string;
   checkOut: string;
   guests: number;
+  extras?: number;
+  animals?: number;
   nights: number;
   totalCop: number;
   depositCop: number;
@@ -83,6 +85,11 @@ export async function POST(request: Request) {
   if (payload.guests < 1 || payload.guests > cabana.capacity) {
     return NextResponse.json({ error: 'invalid_guests' }, { status: 400 });
   }
+  const extras = Math.max(0, Math.floor(payload.extras ?? 0));
+  const animals = Math.max(0, Math.floor(payload.animals ?? 0));
+  if (extras > 0 && !allowsExtraGuests(cabana)) {
+    return NextResponse.json({ error: 'extras_not_allowed' }, { status: 400 });
+  }
 
   // 7. Date sanity + server-side nights calculation
   const checkInDate = new Date(`${payload.checkIn}T12:00:00`);
@@ -106,7 +113,10 @@ export async function POST(request: Request) {
   }
 
   // 8. Re-compute prices server-side, reject if client lied
-  const serverBreakdown = calculateBreakdown(cabana.nightlyRateCop, serverNights);
+  const serverBreakdown = calculateBreakdown(cabana.nightlyRateCop, serverNights, {
+    extras,
+    animals,
+  });
   const totalDiff = Math.abs(serverBreakdown.subtotal - payload.totalCop);
   const depositDiff = Math.abs(serverBreakdown.deposit - payload.depositCop);
   if (totalDiff > PRICE_TOLERANCE || depositDiff > PRICE_TOLERANCE) {
@@ -168,6 +178,8 @@ export async function POST(request: Request) {
       checkIn: payload.checkIn,
       checkOut: payload.checkOut,
       guests: payload.guests,
+      extras,
+      animals,
       totalCop: serverBreakdown.subtotal,
       depositCop: serverBreakdown.deposit,
       guestName: payload.guestName,

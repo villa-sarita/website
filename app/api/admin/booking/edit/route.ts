@@ -3,17 +3,12 @@ import { NextResponse } from 'next/server';
 
 import { logAdminAction } from '@/lib/auditLog';
 import { findConflicts } from '@/lib/availability';
-import { saveBooking, type PaymentMethod } from '@/lib/bookingStore';
-import { allowsExtraGuests, getCabana, getCabanaName } from '@/lib/cabanas';
+import { loadBooking, saveBooking, type PaymentMethod } from '@/lib/bookingStore';
+import { allowsExtraGuests, getCabana } from '@/lib/cabanas';
 import { SESSION_COOKIE, verifyPassword, verifySessionToken } from '@/lib/session';
 
 export const runtime = 'nodejs';
 
-/**
- * Admin auth — prefer the cookie session (set by /api/admin/login). Fall
- * back to `Authorization: Bearer <ADMIN_TOKEN>` so scripts and curl tests
- * keep working.
- */
 async function authOk(request: Request): Promise<boolean> {
   const cookieStore = await cookies();
   const session = verifySessionToken(cookieStore.get(SESSION_COOKIE)?.value);
@@ -25,19 +20,18 @@ async function authOk(request: Request): Promise<boolean> {
   return false;
 }
 
-interface ManualBookingPayload {
-  cabanaSlug: string;
-  checkIn: string; // YYYY-MM-DD
-  checkOut: string; // YYYY-MM-DD
+interface EditBookingPayload {
+  reference: string;
+  checkIn: string;
+  checkOut: string;
   guests: number;
   extras?: number;
   animals?: number;
   guestName: string;
   guestPhone?: string;
-  guestEmail?: string;
+  paymentMethod?: PaymentMethod;
   totalCop: number;
   depositCop: number;
-  paymentMethod: PaymentMethod;
   notes?: string;
 }
 
@@ -48,17 +42,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
-  let p: ManualBookingPayload;
+  let p: EditBookingPayload;
   try {
-    p = (await request.json()) as ManualBookingPayload;
+    p = (await request.json()) as EditBookingPayload;
   } catch {
     return NextResponse.json({ error: 'invalid_body' }, { status: 400 });
   }
 
-  // Validation
   if (
-    !p.cabanaSlug ||
-    !p.guestName ||
+    !p.reference ||
     !p.checkIn ||
     !p.checkOut ||
     !ISO_DATE.test(p.checkIn) ||
@@ -66,7 +58,7 @@ export async function POST(request: Request) {
     typeof p.guests !== 'number' ||
     typeof p.totalCop !== 'number' ||
     typeof p.depositCop !== 'number' ||
-    !p.paymentMethod
+    !p.guestName
   ) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 400 });
   }
@@ -74,9 +66,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'invalid_dates' }, { status: 400 });
   }
 
-  const cabana = getCabana(p.cabanaSlug);
+  const existing = await loadBooking(p.reference);
+  if (!existing) {
+    return NextResponse.json({ error: 'not_found' }, { status: 404 });
+  }
+  if (existing.status === 'cancelled' || existing.status === 'failed') {
+    return NextResponse.json({ error: 'booking_inactive' }, { status: 400 });
+  }
+
+  // Cabin can't be re-assigned mid-flight — keeps photos/links sane.
+  const cabana = existing.cabanaSlug ? getCabana(existing.cabanaSlug) : undefined;
   if (!cabana) {
-    return NextResponse.json({ error: 'unknown_cabana' }, { status: 400 });
+    return NextResponse.json({ error: 'cabin_unknown' }, { status: 400 });
   }
   if (p.guests < 1 || p.guests > cabana.capacity) {
     return NextResponse.json({ error: 'invalid_guests' }, { status: 400 });
@@ -86,15 +87,14 @@ export async function POST(request: Request) {
   if (extras > 0 && !allowsExtraGuests(cabana)) {
     return NextResponse.json({ error: 'extras_not_allowed' }, { status: 400 });
   }
-  if (!['wompi', 'cash', 'transfer', 'other'].includes(p.paymentMethod)) {
-    return NextResponse.json({ error: 'invalid_payment_method' }, { status: 400 });
-  }
 
-  // Conflict check — same rule the public checkout uses.
+  // Conflict check — exclude this booking from the search so an unchanged
+  // date range doesn't "conflict with itself".
   const { hasConflict, conflicts } = await findConflicts(
-    p.cabanaSlug,
+    cabana.slug,
     p.checkIn,
     p.checkOut,
+    { excludeReference: p.reference },
   );
   if (hasConflict) {
     return NextResponse.json(
@@ -112,38 +112,49 @@ export async function POST(request: Request) {
     );
   }
 
-  // Build a reference for the manual booking. Distinct prefix so it's
-  // visually obvious in the admin list that these came from your aunt's
-  // phone bookings, not from the public site.
-  const reference = `vs-manual-${p.cabanaSlug}-${Date.now().toString(36)}`;
+  const before = {
+    checkIn: existing.checkIn,
+    checkOut: existing.checkOut,
+    guests: existing.guests,
+    extras: existing.extras ?? 0,
+    animals: existing.animals ?? 0,
+    totalCop: existing.totalCop,
+    depositCop: existing.depositCop,
+  };
 
-  await saveBooking(reference, {
-    reference,
-    cabana: getCabanaName(cabana, 'es'),
-    cabanaSlug: p.cabanaSlug,
-    source: 'manual',
-    status: 'paid', // manual bookings are recorded post-fact, already paid (or fully agreed)
-    paymentMethod: p.paymentMethod,
+  await saveBooking(p.reference, {
+    ...existing,
     checkIn: p.checkIn,
     checkOut: p.checkOut,
     guests: p.guests,
     extras,
     animals,
+    guestName: p.guestName,
+    guestPhone: p.guestPhone ?? existing.guestPhone,
+    paymentMethod: p.paymentMethod ?? existing.paymentMethod,
     totalCop: p.totalCop,
     depositCop: p.depositCop,
-    guestName: p.guestName,
-    guestEmail: p.guestEmail ?? '',
-    guestPhone: p.guestPhone,
-    hasEvent: false,
-    notes: p.notes,
+    notes: p.notes ?? existing.notes,
+    createdAt: existing.createdAt,
   });
 
   await logAdminAction({
     actor: 'admin',
-    action: 'booking_manual_created',
-    bookingId: reference,
-    metadata: { cabanaSlug: p.cabanaSlug, checkIn: p.checkIn, checkOut: p.checkOut },
+    action: 'booking_edited',
+    bookingId: p.reference,
+    metadata: {
+      before,
+      after: {
+        checkIn: p.checkIn,
+        checkOut: p.checkOut,
+        guests: p.guests,
+        extras,
+        animals,
+        totalCop: p.totalCop,
+        depositCop: p.depositCop,
+      },
+    },
   });
 
-  return NextResponse.json({ ok: true, reference });
+  return NextResponse.json({ ok: true });
 }

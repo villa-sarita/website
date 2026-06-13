@@ -6,8 +6,14 @@ import type { DateRange, Matcher } from 'react-day-picker';
 
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
 import type { Cabana } from '@/lib/cabanas';
+import { allowsExtraGuests } from '@/lib/cabanas';
 import { diffInNights, toISODate } from '@/lib/format';
-import { calculateBreakdown, formatCurrency } from '@/lib/price';
+import {
+  ANIMAL_NIGHTLY_COP,
+  EXTRA_PERSON_NIGHTLY_COP,
+  calculateBreakdown,
+  formatCurrency,
+} from '@/lib/price';
 import { buildWhatsAppLink } from '@/lib/whatsapp';
 import siteData from '@/content/site.json';
 
@@ -37,7 +43,11 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
   const router = useRouter();
   const [range, setRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState(Math.min(2, cabana.capacity));
+  const [extras, setExtras] = useState(0);
+  const [animals, setAnimals] = useState(0);
   const [blocked, setBlocked] = useState<BlockedRange[]>([]);
+
+  const canHaveExtras = allowsExtraGuests(cabana);
 
   // Fetch already-booked ranges for this cabin so we can grey them out
   // in the calendar. Don't block render on this — picker still works
@@ -72,8 +82,12 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
   );
 
   const breakdown = useMemo(
-    () => calculateBreakdown(cabana.nightlyRateCop, nights),
-    [cabana.nightlyRateCop, nights],
+    () =>
+      calculateBreakdown(cabana.nightlyRateCop, nights, {
+        extras: canHaveExtras ? extras : 0,
+        animals,
+      }),
+    [cabana.nightlyRateCop, nights, canHaveExtras, extras, animals],
   );
 
   const canBook = nights > 0;
@@ -85,6 +99,8 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
       to: toISODate(range.to),
       guests: String(guests),
     });
+    if (canHaveExtras && extras > 0) params.set('extras', String(extras));
+    if (animals > 0) params.set('animals', String(animals));
     router.push(`/${locale}/reservar/${cabana.slug}?${params.toString()}`);
   };
 
@@ -122,14 +138,54 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
         maxLabel={dict.booking.maxGuestsReached}
       />
 
+      {canHaveExtras && (
+        <GuestCounter
+          value={extras}
+          onChange={setExtras}
+          min={0}
+          max={99}
+          label={`${dict.booking.extras} (+${formatCurrency(EXTRA_PERSON_NIGHTLY_COP, locale)} / ${dict.cabanas.perNight})`}
+          addLabel={dict.booking.addExtra}
+          removeLabel={dict.booking.removeExtra}
+          maxLabel=""
+        />
+      )}
+
+      <GuestCounter
+        value={animals}
+        onChange={setAnimals}
+        min={0}
+        max={99}
+        label={`${dict.booking.animals} (+${formatCurrency(ANIMAL_NIGHTLY_COP, locale)} / ${dict.cabanas.perNight})`}
+        addLabel={dict.booking.addAnimal}
+        removeLabel={dict.booking.removeAnimal}
+        maxLabel=""
+      />
+
       {nights > 0 && (
         <div className={styles.summary}>
           <div className={styles.summaryRow}>
             <span>
               {formatCurrency(cabana.nightlyRateCop, locale)} × {nights} {dict.booking.nights}
             </span>
-            <span>{formatCurrency(breakdown.subtotal, locale)}</span>
+            <span>{formatCurrency(breakdown.base, locale)}</span>
           </div>
+          {breakdown.extras > 0 && (
+            <div className={styles.summaryRow}>
+              <span>
+                {breakdown.extras} × {dict.booking.extraLine}
+              </span>
+              <span>{formatCurrency(breakdown.extrasCost, locale)}</span>
+            </div>
+          )}
+          {breakdown.animals > 0 && (
+            <div className={styles.summaryRow}>
+              <span>
+                {breakdown.animals} × {dict.booking.animalLine}
+              </span>
+              <span>{formatCurrency(breakdown.animalsCost, locale)}</span>
+            </div>
+          )}
           <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
             <span>{dict.booking.total}</span>
             <strong>{formatCurrency(breakdown.subtotal, locale)}</strong>

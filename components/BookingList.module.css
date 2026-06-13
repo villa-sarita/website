@@ -453,3 +453,110 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ============================================================
+   Edit dialog — wider, with grid form layout + sage confirm.
+   ============================================================ */
+
+.dialogWide {
+  max-width: 580px;
+}
+
+.dialogWide .dialogConfirm {
+  background: var(--leaf-dark);
+  color: white;
+}
+.dialogWide .dialogConfirm:hover {
+  background: #4d7332;
+}
+
+.editGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem 0.85rem;
+  margin: 0.4rem 0 0.5rem;
+}
+
+.editField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  min-width: 0;
+}
+
+.editField > span {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.editField input,
+.editField select,
+.editField textarea {
+  font-family: inherit;
+  font-size: 0.92rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid rgba(58, 38, 22, 0.2);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editField select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 1.9rem;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%235e8a3e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 8l4 4 4-4'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 0.8rem;
+  cursor: pointer;
+}
+
+.editField input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.editField input[type='number']::-webkit-outer-spin-button,
+.editField input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.editField input:focus,
+.editField select:focus,
+.editField textarea:focus {
+  outline: 2px solid var(--leaf);
+  outline-offset: 1px;
+  border-color: var(--leaf);
+}
+
+.editWide {
+  grid-column: 1 / -1;
+}
+
+.editSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0.6rem 0.75rem;
+  margin-top: 0.5rem;
+  background: rgba(124, 172, 86, 0.1);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.editSummary strong {
+  color: var(--leaf-dark);
+}
+
+@media (max-width: 520px) {
+  .editGrid {
+    grid-template-columns: 1fr;
+  }
+}

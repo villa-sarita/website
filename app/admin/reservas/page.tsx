@@ -2,10 +2,10 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 import { AdminLogoutButton } from '@/components/AdminLogoutButton';
-import { BookingList } from '@/components/BookingList';
+import { BookingList, type CabinMetaForEdit } from '@/components/BookingList';
 import { ChangePasswordButton } from '@/components/ChangePasswordButton';
 import { ManualBookingForm } from '@/components/ManualBookingForm';
-import { cabanas } from '@/lib/cabanas';
+import { allowsExtraGuests, cabanas } from '@/lib/cabanas';
 import { listBookings, type BookingStatus } from '@/lib/bookingStore';
 import { SESSION_COOKIE, verifySessionToken } from '@/lib/session';
 import siteData from '@/content/site.json';
@@ -44,6 +44,18 @@ export default async function AdminReservasPage() {
   const past = active.filter((b) => b.checkIn < today && b.checkIn !== '—');
   const undated = active.filter((b) => b.checkIn === '—');
 
+  const cabinMeta: Record<string, CabinMetaForEdit> = Object.fromEntries(
+    cabanas.map((c) => [
+      c.slug,
+      {
+        slug: c.slug,
+        rate: c.nightlyRateCop,
+        capacity: c.capacity,
+        allowsExtras: allowsExtraGuests(c),
+      },
+    ]),
+  );
+
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -61,27 +73,28 @@ export default async function AdminReservasPage() {
           name: c.name,
           rate: c.nightlyRateCop,
           capacity: c.capacity,
+          allowsExtras: allowsExtraGuests(c),
         }))}
       />
 
       {upcoming.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Próximas</h2>
-          <BookingList bookings={upcoming} />
+          <BookingList bookings={upcoming} cabins={cabinMeta} />
         </section>
       )}
 
       {undated.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Sin fechas (revisar)</h2>
-          <BookingList bookings={undated} />
+          <BookingList bookings={undated} cabins={cabinMeta} />
         </section>
       )}
 
       {past.length > 0 && (
         <section className={styles.section}>
           <h2 className={styles.sectionHead}>Pasadas</h2>
-          <BookingList bookings={past} />
+          <BookingList bookings={past} cabins={cabinMeta} />
         </section>
       )}
 

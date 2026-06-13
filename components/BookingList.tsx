@@ -10,7 +10,15 @@ import type {
   PaymentMethod,
 } from '@/lib/bookingStore';
 
+import { EditBookingDialog } from './EditBookingDialog';
 import styles from './BookingList.module.css';
+
+export interface CabinMetaForEdit {
+  slug: string;
+  rate: number;
+  capacity: number;
+  allowsExtras: boolean;
+}
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
   pending: 'Pendiente',
@@ -83,6 +91,10 @@ function buildWhatsAppLink(phone: string | undefined): string | null {
 
 interface BookingListProps {
   bookings: BookingRecord[];
+  /** Per-cabin metadata keyed by slug — needed to enable the edit flow
+   *  (capacity, rate, extras eligibility). When absent, the edit button
+   *  is hidden. */
+  cabins?: Record<string, CabinMetaForEdit>;
   /** When true, render a small expand/collapse caret header so the whole
    *  group can hide (used for the Canceladas section). */
   collapsible?: boolean;
@@ -92,6 +104,7 @@ interface BookingListProps {
 
 export function BookingList({
   bookings,
+  cabins,
   collapsible = false,
   defaultCollapsed = false,
   emptyHint,
@@ -99,6 +112,12 @@ export function BookingList({
   const [expanded, setExpanded] = useState<string | null>(null);
   const [groupOpen, setGroupOpen] = useState(!defaultCollapsed);
   const [cancelTarget, setCancelTarget] = useState<BookingRecord | null>(null);
+  const [editTarget, setEditTarget] = useState<BookingRecord | null>(null);
+
+  const editCabin =
+    editTarget && editTarget.cabanaSlug && cabins
+      ? cabins[editTarget.cabanaSlug]
+      : undefined;
 
   if (bookings.length === 0) {
     return emptyHint ? <p className={styles.emptyHint}>{emptyHint}</p> : null;
@@ -124,10 +143,12 @@ export function BookingList({
               key={b.reference}
               booking={b}
               expanded={expanded === b.reference}
+              canEdit={!!(b.cabanaSlug && cabins && cabins[b.cabanaSlug])}
               onToggle={() =>
                 setExpanded((cur) => (cur === b.reference ? null : b.reference))
               }
               onAskCancel={() => setCancelTarget(b)}
+              onAskEdit={() => setEditTarget(b)}
             />
           ))}
         </ul>
@@ -138,6 +159,13 @@ export function BookingList({
           onClose={() => setCancelTarget(null)}
         />
       )}
+      {editTarget && editCabin && (
+        <EditBookingDialog
+          booking={editTarget}
+          cabin={editCabin}
+          onClose={() => setEditTarget(null)}
+        />
+      )}
     </>
   );
 }
@@ -145,15 +173,20 @@ export function BookingList({
 function BookingRow({
   booking,
   expanded,
+  canEdit,
   onToggle,
   onAskCancel,
+  onAskEdit,
 }: {
   booking: BookingRecord;
   expanded: boolean;
+  canEdit: boolean;
   onToggle: () => void;
   onAskCancel: () => void;
+  onAskEdit: () => void;
 }) {
   const canCancel = booking.status !== 'cancelled' && booking.status !== 'failed';
+  const showEdit = canEdit && canCancel && (booking.source ?? 'online') !== 'event_inquiry';
   const source: BookingSource = booking.source ?? 'online';
   const isEvent = source === 'event_inquiry';
   const dateRange = formatDateRange(booking.checkIn, booking.checkOut);
@@ -234,6 +267,18 @@ function BookingRow({
                 <dd>{formatDateLong(booking.checkOut)}</dd>
                 <dt>Huéspedes</dt>
                 <dd>{booking.guests || '—'}</dd>
+                {(booking.extras ?? 0) > 0 && (
+                  <>
+                    <dt>Personas extra</dt>
+                    <dd>{booking.extras}</dd>
+                  </>
+                )}
+                {(booking.animals ?? 0) > 0 && (
+                  <>
+                    <dt>Animales</dt>
+                    <dd>{booking.animals}</dd>
+                  </>
+                )}
               </>
             )}
             <dt>Teléfono</dt>
@@ -303,6 +348,15 @@ function BookingRow({
           )}
 
           <div className={styles.expandActions}>
+            {showEdit && (
+              <button
+                type="button"
+                onClick={onAskEdit}
+                className={styles.actionBtn}
+              >
+                Editar reserva
+              </button>
+            )}
             {waLink && (
               <a
                 href={waLink}

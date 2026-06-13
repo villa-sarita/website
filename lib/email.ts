@@ -18,6 +18,12 @@ export interface HostNotificationParams {
   checkIn: string;
   checkOut: string;
   guests: number;
+  /** Guests booked above the cabin's base capacity, charged at the
+   *  extra-person rate. Defaults to 0 if absent. */
+  extras?: number;
+  /** Animals (pets) the guest brought, charged at the animal rate.
+   *  Defaults to 0 if absent. */
+  animals?: number;
   totalCop: number;
   depositCop: number;
   guestName: string;
@@ -51,6 +57,8 @@ export async function sendHostNotification(p: HostNotificationParams) {
         <tr><td style="padding:8px 0;color:#5a3826">Llegada</td><td style="padding:8px 0;text-align:right"><strong>${escapeHtml(p.checkIn)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#5a3826">Salida</td><td style="padding:8px 0;text-align:right"><strong>${escapeHtml(p.checkOut)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#5a3826">Huéspedes</td><td style="padding:8px 0;text-align:right"><strong>${p.guests}</strong></td></tr>
+        ${p.extras ? `<tr><td style="padding:8px 0;color:#5a3826">Personas extra</td><td style="padding:8px 0;text-align:right"><strong>${p.extras}</strong></td></tr>` : ''}
+        ${p.animals ? `<tr><td style="padding:8px 0;color:#5a3826">Animales</td><td style="padding:8px 0;text-align:right"><strong>${p.animals}</strong></td></tr>` : ''}
         <tr><td style="padding:8px 0;color:#5a3826">Total estadía</td><td style="padding:8px 0;text-align:right"><strong>${fmt.format(p.totalCop)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#5a3826">Anticipo pagado (20%)</td><td style="padding:8px 0;text-align:right"><strong style="color:#2e4a2c">${fmt.format(p.depositCop)}</strong></td></tr>
         <tr><td style="padding:8px 0;color:#5a3826">Saldo al llegar</td><td style="padding:8px 0;text-align:right"><strong>${fmt.format(p.totalCop - p.depositCop)}</strong></td></tr>
