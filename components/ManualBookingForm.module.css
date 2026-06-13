@@ -79,6 +79,7 @@
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.85rem;
+  min-width: 0;
 }
 
 .field > span {
@@ -96,6 +97,8 @@
   border-radius: 6px;
   background: var(--paper);
   color: var(--ink);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .field select {
