@@ -183,6 +183,15 @@
   margin-top: 0.25rem;
 }
 
+.checkinNote {
+  margin: 0.75rem 0 0;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(58, 38, 22, 0.18);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
 .cta {
   margin-top: 0.5rem;
   width: 100%;

@@ -8,7 +8,7 @@ import type { DateRange } from 'react-day-picker';
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
 import type { Cabana } from '@/lib/cabanas';
 import { allowsExtraGuests, getCabanaName } from '@/lib/cabanas';
-import { diffInNights, formatDate, toISODate } from '@/lib/format';
+import { diffInNights, formatDate, formatTime12h, toISODate } from '@/lib/format';
 import {
   ANIMAL_NIGHTLY_COP,
   EXTRA_PERSON_NIGHTLY_COP,
@@ -338,6 +338,12 @@ export function BookingForm({
             <strong>{formatCurrency(breakdown.balance, locale)}</strong>
           </div>
           <p className={styles.balanceHelp}>{dict.booking.balanceHelp}</p>
+
+          <p className={styles.checkinNote}>
+            {dict.booking.checkInFrom} {formatTime12h(siteData.checkIn, locale)}
+            {' · '}
+            {dict.booking.checkOutBy} {formatTime12h(siteData.checkOut, locale)}
+          </p>
 
           {error && <p className={styles.error}>{error}</p>}
 

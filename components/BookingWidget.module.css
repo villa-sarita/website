@@ -87,6 +87,14 @@
   cursor: not-allowed;
 }
 
+.checkinNote {
+  margin: 0.65rem 0 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.01em;
+}
+
 .hostLink {
   text-align: center;
   font-family: var(--font-hand);

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatTime12h } from '@/lib/format';
 import { formatCurrency } from '@/lib/price';
 import { buildBookingMessage, buildWhatsAppLink } from '@/lib/whatsapp';
 import siteData from '@/content/site.json';
@@ -96,6 +96,14 @@ export function ConfirmationView({ locale, dict, reference }: ConfirmationViewPr
           <div className={styles.row}>
             <span>{formatDate(booking.checkIn, locale)}</span>
             <span>→ {formatDate(booking.checkOut, locale)}</span>
+          </div>
+          <div className={`${styles.row} ${styles.times}`}>
+            <span>
+              {dict.booking.checkInFrom} {formatTime12h(siteData.checkIn, locale)}
+            </span>
+            <span>
+              {dict.booking.checkOutBy} {formatTime12h(siteData.checkOut, locale)}
+            </span>
           </div>
           <div className={styles.divider} />
           <div className={styles.row}>

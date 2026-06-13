@@ -38,3 +38,17 @@ export function diffInNights(checkIn: Date, checkOut: Date): number {
 export function toISODate(date: Date): string {
   return format(date, 'yyyy-MM-dd');
 }
+
+/** Format a "HH:mm" string (e.g. "15:00") as "3 PM" / "3:30 PM".
+ *  Locale-aware: Spanish gets lowercase "p. m." per RAE; English gets "PM". */
+export function formatTime12h(hhmm: string, locale: 'es' | 'en' = 'es'): string {
+  const [hStr, mStr] = hhmm.split(':');
+  const h = Number(hStr);
+  const m = Number(mStr ?? '0');
+  if (!Number.isFinite(h)) return hhmm;
+  const hour12 = ((h + 11) % 12) + 1;
+  const isPm = h >= 12;
+  const suffix = locale === 'en' ? (isPm ? 'PM' : 'AM') : isPm ? 'p. m.' : 'a. m.';
+  const time = m === 0 ? `${hour12}` : `${hour12}:${m.toString().padStart(2, '0')}`;
+  return `${time} ${suffix}`;
+}

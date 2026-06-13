@@ -98,6 +98,8 @@
     "stepDates": "Dates & guests",
     "checkIn": "Check-in",
     "checkOut": "Check-out",
+    "checkInFrom": "Check-in from",
+    "checkOutBy": "Check-out by",
     "guests": "Guests",
     "addGuest": "Add guest",
     "removeGuest": "Remove guest",

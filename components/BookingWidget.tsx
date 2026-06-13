@@ -7,7 +7,7 @@ import type { DateRange, Matcher } from 'react-day-picker';
 import type { Dictionary, Locale } from '@/i18n/dictionaries';
 import type { Cabana } from '@/lib/cabanas';
 import { allowsExtraGuests } from '@/lib/cabanas';
-import { diffInNights, toISODate } from '@/lib/format';
+import { diffInNights, formatTime12h, toISODate } from '@/lib/format';
 import {
   ANIMAL_NIGHTLY_COP,
   EXTRA_PERSON_NIGHTLY_COP,
@@ -205,6 +205,12 @@ export function BookingWidget({ cabana, locale, dict }: BookingWidgetProps) {
       >
         {dict.cabanas.bookButton}
       </button>
+
+      <p className={styles.checkinNote}>
+        {dict.booking.checkInFrom} {formatTime12h(siteData.checkIn, locale)}
+        {' · '}
+        {dict.booking.checkOutBy} {formatTime12h(siteData.checkOut, locale)}
+      </p>
 
       <a
         href={whatsappHref}

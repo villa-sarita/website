@@ -98,6 +98,8 @@
     "stepDates": "Fechas y huéspedes",
     "checkIn": "Llegada",
     "checkOut": "Salida",
+    "checkInFrom": "Llegada desde",
+    "checkOutBy": "Salida hasta",
     "guests": "Huéspedes",
     "addGuest": "Añadir huésped",
     "removeGuest": "Quitar huésped",
